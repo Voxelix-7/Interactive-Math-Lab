@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathLab</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+  <div class="welcome-screen fade">
+    <div class="welcome-content">
+      <h2>Math Lab</h2>
+      <p>!مختبرك التفاعلي لاستكشاف سحر الرياضيات</p>
+      <button id="startBtn" class="start-button">Get Started</button>
+    </div>
+  </div>
+
+  <div id="lab-interface" class="hidden">
+    <div class="lab-layout">
+      
+      <div class="column">
+        <!-- Geometry category -->
+        <div class="category" id="geometryBtn">
+          Geometry 
+          <div class="geomenu" id="geoDropdown"> 
+            <div class="menuitems">
+              <div class="geomenu-item" id="pythagorasBtn">Pythagorean Theorem</div>
+            <div class="geomenu-item" id="congruenceBtn">Congruence</div>
+            <div class="geomenu-item" id="polygonBtn">Polygons</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="divider"></div>
+        <!-- Circles category -->
+        <div class="category" id="circlesBtn">
+          Circles
+          <div class="Cmenu" id="circlesDropdown"> 
+            <div class="menuitems">
+              <div class="C-item" id="circlePropsBtn">Properties</div>
+              <div class="C-item" id="subtendedAnglesBtn">Subtended Angles</div>
+              <div class="C-item" id="tangentBtn">Tangents & Chords</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="category">Trigonometry</div>
+        <div class="divider"></div>
+        <div class="category">Vectors</div>
+      </div>
+
+      <div class="main-area">
+        <div class="canvas-area" id="canvas-container">
+          </div>
+
+        <div class="data-panel" id="dataPanel">
+          <p class="dataP">Laws and theorems will appear here.</p>
+          
+          </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>
