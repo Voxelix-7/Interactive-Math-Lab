@@ -1,10 +1,8 @@
 /* -- Variables --*/
 let canvas, ctx;
-let sideA = 120;
-let sideB = 100;
 let currentModule = null;
 let dragging = null;
-const originX = 180, originY = 250, cmToPx = 37.8;
+const cmToPx = 37.8;
 const polygonNames = {
   3: "Triangle", 4: "Quadrilateral", 5: "Pentagon", 6: "Hexagon",
   7: "Heptagon", 8: "Octagon", 9: "Nonagon", 10: "Decagon", 
@@ -13,9 +11,11 @@ const polygonNames = {
 
 let labState = {
     active: 'none', 
-    mode: 'SAS',    
-    tri: { c: 12, b: 10, a: 60, angleB: 60 },    
-    targets: {
+    mode: 'SAS',   
+    sideA: 120,
+    sideB: 100,
+    tri: { c: 12, b: 10, a: 60, angleB: 60 },    // Congruence triangle 
+    targets: { // nested object
         SSS: {},
         SAS: {},
         ASA: {}
@@ -24,14 +24,12 @@ let labState = {
     polyRadius: 100,
     showDecomposition: false,
     circleRadiusCm: 5, // Circle
-    circleRotation: 0, 
-    isRolling: false,
-  
+    originX: 180,
+    originY: 250,
     anglePoints: {
       A: 0,
       B: 1.5,
       C: 3.5,
-      isTangent: false,
       radius: 110
     }
 };
@@ -68,10 +66,10 @@ function setupCalculation() {
     };
     function update() {
         if (inputA.value === "" || inputB.value === "") return; // in case the input bars are empty, do not calculate
-        sideA = processValue(inputA);
-        sideB = processValue(inputB);
-        inputA.value = sideA.toFixed(0);
-        inputB.value = sideB.toFixed(0);
+        labState.sideA = processValue(inputA);
+        labState.sideB = processValue(inputB);
+        inputA.value = labState.sideA.toFixed(0);
+        inputB.value = labState.sideB.toFixed(0);
         draw();
         updateVisualProof();
     }
@@ -79,6 +77,7 @@ function setupCalculation() {
     inputB.addEventListener("input", update);
 }
 
+  
 /* --- App Initialization --- */
 window.onload = function() {
     ['SSS', 'SAS', 'ASA'].forEach(generateRandomGoal);
@@ -134,27 +133,22 @@ window.onload = function() {
     };
 
     /* --- Lab Assignments --- */
-    setupLab("pythagorasBtn", () => {
-        resetLab();
-        currentModule = pythagorasModule;
-        pythagorasModule.init();
-        draw();
+    const labs = {
+    pythagorasBtn: pythagorasModule,
+    congruenceBtn: congruenceModule,
+    subtendedAnglesBtn: subtendedAnglesModule,
+    polygonBtn: polygonModule,
+    circlePropsBtn: circleModule
+    };
+    Object.entries(labs).forEach(([btnId, module]) => {
+    setupLab(btnId, () => {
+        if (module && typeof module.init === 'function') {
+            resetLab();
+            currentModule = module;
+            module.init();
+            draw();
+        }
     });
-
-    setupLab("congruenceBtn", () => {
-        resetLab();
-        currentModule = congruenceModule;
-        congruenceModule.init();
-        draw();
-    });
-
-    setupLab("polygonBtn", () => typeof startPolygonLab === 'function' && startPolygonLab());
-    setupLab("circlePropsBtn", () => typeof startCirclePropertiesLab === 'function' && startCirclePropertiesLab());
-    setupLab("subtendedAnglesBtn", () => {
-    resetLab();
-    currentModule = subtendedAnglesModule;
-    subtendedAnglesModule.init();
-    draw();
 });
 };
 
@@ -197,10 +191,10 @@ const pythagorasModule = {
         updateVisualProof();
     },
     draw(ctx) {
-        const s = getDynamicScale(sideA, sideB);
-        const Ax = originX, Ay = originY;
-        const B = { x: Ax + sideA * s, y: Ay };
-        const C = { x: Ax, y: Ay - sideB * s };
+        const s = getDynamicScale(labState.sideA, labState.sideB);
+        const Ax = labState.originX , Ay = labState.originY;
+        const B = { x: Ax + labState.sideA * s, y: Ay };
+        const C = { x: Ax, y: Ay - labState.sideB * s };
         drawSimpleSquare({x: Ax, y: Ay}, C, "#3498db", -1); // Side B
         drawSimpleSquare({x: Ax, y: Ay}, B, "#e74c3c", 1);
         drawHypotenuseSquare(B, C, "#2ecc71");
@@ -217,8 +211,8 @@ const pythagorasModule = {
         drawDragger(C);
         ctx.fillStyle = "#4e342e";
         ctx.font = "bold 14px Arial";
-        ctx.fillText(`a: ${sideA.toFixed(0)}`, (Ax + B.x)/2 - 15, Ay + 25);
-        ctx.fillText(`b: ${sideB.toFixed(0)}`, Ax - 55, (Ay + C.y)/2);
+        ctx.fillText(`a: ${labState.sideA.toFixed(0)}`, (Ax + B.x)/2 - 15, Ay + 25);
+        ctx.fillText(`b: ${labState.sideB.toFixed(0)}`, Ax - 55, (Ay + C.y)/2);
     }
 };
 
@@ -355,6 +349,7 @@ const polygonModule = {
 // Circles Module
 const circleModule = {
     init() {
+        createCanvasOnce();
         labState.circleRadiusCm = 5;
         renderCirclePropertiesUI();
     },
@@ -815,10 +810,10 @@ function getDynamicScale(a, b) {
 function updateVisualProof() {
     const res = document.getElementById("result");
     if (!res) return;
-    const a2 = sideA * sideA, b2 = sideB * sideB, c2 = a2 + b2;
+    const a2 = labState.sideA * labState.sideA, b2 = labState.sideB * labState.sideB, c2 = a2 + b2;
     res.innerHTML = `<div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
-        <span style="color:#e74c3c; font-weight:bold;">${sideA.toFixed(0)}²</span> + 
-        <span style="color:#3498db; font-weight:bold;">${sideB.toFixed(0)}²</span> = 
+        <span style="color:#e74c3c; font-weight:bold;">${labState.sideA.toFixed(0)}²</span> + 
+        <span style="color:#3498db; font-weight:bold;">${labState.sideB.toFixed(0)}²</span> = 
         <span style="color:#2ecc71; font-weight:bold;">${c2.toFixed(0)}</span><br>
         c = <span style="color:#d35400; font-size:1.2em;">${Math.sqrt(c2).toFixed(2)}</span></div>`;
 }
@@ -834,9 +829,9 @@ function startDrag(e) {
     if (!canvas || !currentModule) return;
     const { x, y } = getPos(e);
     if (currentModule === pythagorasModule) {
-        const s = getDynamicScale(sideA, sideB);
-        if (Math.hypot(x - (originX + sideA * s), y - originY) < 25) dragging = "B";
-        else if (Math.hypot(x - originX, y - (originY - sideB * s)) < 25) dragging = "C";
+        const s = getDynamicScale(labState.sideA, labState.sideB);
+        if (Math.hypot(x - (labState.originX + labState.sideA * s), y - labState.originY) < 25) dragging = "B";
+        else if (Math.hypot(x - labState.originX, y - (labState.originY - labState.sideB * s)) < 25) dragging = "C";
     } else if (currentModule === subtendedAnglesModule) {
         const cx = canvas.width / 2, cy = canvas.height / 2, r = labState.anglePoints.radius;
         const checkHit = (angle) => Math.hypot(x - (cx + r * Math.cos(angle)), y - (cy + r * Math.sin(angle))) < 25;
@@ -856,9 +851,9 @@ function drag(e) {
         labState.anglePoints[key] = angle < 0 ? angle + Math.PI * 2 : angle;
     }
     else if (currentModule === pythagorasModule) {
-        const s = getDynamicScale(sideA, sideB);
-        if (dragging === "B") sideA = Math.max(1, Math.min(500, (x - originX) / s));
-        else if (dragging === "C") sideB = Math.max(1, Math.min(500, (originY - y) / s));
+        const s = getDynamicScale(labState.sideA, labState.sideB);
+        if (dragging === "B") labState.sideA = Math.max(1, Math.min(500, (x - labState.originX) / s));
+        else if (dragging === "C") labState.sideB = Math.max(1, Math.min(500, (labState.originY - y) / s));
         updateInputsFromTriangle();
     }
     draw();
@@ -868,8 +863,8 @@ function stopDrag() { dragging = null; }
 
 function updateInputsFromTriangle() {
     const iA = document.getElementById("inputA"), iB = document.getElementById("inputB");
-    if (iA) iA.value = sideA.toFixed(0); 
-    if (iB) iB.value = sideB.toFixed(0);
+    if (iA) iA.value = labState.sideA.toFixed(0); 
+    if (iB) iB.value = labState.sideB.toFixed(0);
     updateVisualProof();
 }
 
@@ -929,33 +924,25 @@ function updatePolygonStats(n, sideCm) {
         </div>`;
 }
 
-function attachPolyListeners() {
-    const sS = document.getElementById('sidesSlider'), rS = document.getElementById('radiusSlider'), dC = document.getElementById('decompCheck');
+function attachPolyListeners() { // function to listen when the user interacts with the sliders or checkboxes
+    const sS = document.getElementById('sidesSlider'), rS = document.getElementById('radiusSlider'), dC = document.getElementById('decompCheck'); // create three separate constants at the exact same time (shortcut)
     if (sS) sS.oninput = function() { 
-        labState.polySides = +this.value; 
-        document.getElementById('valSideCount').innerText = this.value; 
+        labState.polySides = +this.value; // (labState): saves the number directly into the app's global memory
+        document.getElementById('valSideCount').innerText = this.value;  // updates the text next to the slider
         const sideCm = (2 * labState.polyRadius * Math.sin(Math.PI / labState.polySides) / 10).toFixed(1);
-        document.getElementById('valSide').innerText = sideCm;
+        document.getElementById('valSide').innerText = sideCm; // display the centimeter length
         draw(); 
     };
-    if (rS) rS.oninput = function() { 
+    if (rS) rS.oninput = function() { // tracks the Radius (Size) instead of the number of sides.
         labState.polyRadius = +this.value; 
         const sideCm = (2 * this.value * Math.sin(Math.PI / labState.polySides) / 10).toFixed(1);
         document.getElementById('valSide').innerText = sideCm;
         draw(); 
     };
-    if (dC) dC.onchange = function() { labState.showDecomposition = this.checked; draw(); };
+    if (dC) dC.onchange = function() { labState.showDecomposition = this.checked; draw(); }; // checkbox (boolean)
 }
 
 /* --- Circle Properties Lab --- */
-function startCirclePropertiesLab() {
-    resetLab();
-    currentModule = circleModule;
-    createCanvasOnce();
-    circleModule.init();
-    draw(); 
-}
-
 function getCircleProps(r) {
     return { r: r, d: 2 * r, c: 2 * Math.PI * r, a: Math.PI * r * r };
 }
@@ -990,7 +977,7 @@ function renderCirclePropertiesUI() {
             </div>
         </div>`;
 
-    const rIn = document.getElementById("circleRadiusSlider"),
+    const rIn = document.getElementById("circleRadiusSlider"), // creating 5 constants at once
           vR = document.getElementById("valR"),
           sD = document.getElementById("statD"),
           sC = document.getElementById("statC"),
