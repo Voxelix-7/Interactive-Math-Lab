@@ -3,11 +3,45 @@ let canvas, ctx;
 let currentModule = null;
 let dragging = null;
 const cmToPx = 37.8;
+const infoBtn = document.getElementById("info");
+const factsBox = document.getElementById("funFacts");
 const polygonNames = {
   3: "Triangle", 4: "Quadrilateral", 5: "Pentagon", 6: "Hexagon",
   7: "Heptagon", 8: "Octagon", 9: "Nonagon", 10: "Decagon", 
   11: "Hendecagon", 12: "Dodecagon"
 };
+
+const showView = {
+  default: `
+    <p class="subtended-description">Drag points A, B, or C to observe how the angles change.</p>
+    <div class="data-container">
+        <div style="font-size:0.9em; line-height:1.8;">
+            Central Angle (∠AOB): <b style="color:#f39c12;"><span id="valCentral">0</span>°</b><br>
+            Inscribed Angle (∠ACB): <b style="color:#4e342e;"><span id="valInscribed">0</span>°</b>
+        </div>
+    </div>
+    <p style="margin-top:15px; font-size:0.8em; color:#8d6e63;">
+        <i>The orange arc AB subtends both angles.</i>
+    </p>`,
+  inscribed: `<p class="subtended-description">Exploring the Inscribed Angle Theorem.</p>
+    <div class="data-container">
+        <ul class="Slist" style="margin:0; padding-left:20px; font-size:0.9em; line-height:1.8; color:#4e342e;">
+            <li>Inscribed angle: An angle formed by two chords in a circle.</li>
+            <li>Measure of each inscribed angle = <b>1/2</b> measure of <span style="color: #f39c12; font-weight: bold;">AB</span> arc.</li>
+            <li>All inscribed angles subtended by the same arc <span style="color: #f39c12; font-weight: bold;">AB</span> are <b>equal</b> in measure.</li>
+        </ul>
+    </div>`,
+  cyclic: `
+    <p class="subtended-description">Exploring Cyclic Quadrilaterals.</p>
+    <div class="data-container">
+        <ul class="Slist" style="margin:0; padding-left:20px; font-size:0.9em; line-height:1.6; color:#4e342e;">
+            <li>A cyclic quadrilateral has all its four vertices on the circumference of the circle</li>
+            <li>Opposite angles in a cyclic quad add up to 180° <b>(supplementary)</b>.</li>
+            <li>Exterior angle is equal to the interior opposite angle.</li>
+        </ul>
+    </div>
+    <button id="refresh-quad-btn" class="refresh-quad-btn">Refresh Quad</button>`
+}
 
 let labState = {
     active: 'none', 
@@ -51,6 +85,34 @@ function generateRandomGoal(mode) {
     } else if (mode === 'ASA') {
         labState.targets.ASA = { c: rand(8, 13), a: rand(30, 70), angleB: rand(30, 70) };
     }
+}
+
+// Info Button
+function randomFact() {
+    if (!currentModule) return;
+    let moduleFacts;
+    if (currentModule.facts) {
+    moduleFacts = currentModule.facts;
+    } else {
+    moduleFacts = currentModule.modes[currentModule.viewMode].facts;
+    }
+    if (!moduleFacts || moduleFacts.length === 0) {
+      factsBox.textContent = "No facts available.";
+      return;
+    }
+    const randomIndex = Math.floor(Math.random() * moduleFacts.length);
+    factsBox.textContent = moduleFacts[randomIndex];
+}
+
+if(infoBtn && factsBox){
+  infoBtn.addEventListener("mouseenter", () => {
+    factsBox.classList.remove("is-hidden");
+    randomFact();
+  });
+  
+  infoBtn.addEventListener("mouseleave", () => {
+    factsBox.classList.add("is-hidden");
+  });
 }
 
 /* --- Pythagoras Logic --- */
@@ -98,11 +160,11 @@ window.onload = function() {
     if (startBtn) {
         startBtn.addEventListener('click', () => {
             welcomeScreen.style.display = "none";
+            infoBtn.style.display = "none";
             labInterface.style.display = "flex";
             setTimeout(() => labInterface.classList.add("fade"), 10);
         });
     }
-  
     const toggleMenu = (btn, menu, otherMenu) => {
         if (btn && menu) {
             btn.addEventListener('click', (e) => {
@@ -166,6 +228,7 @@ function createCanvasOnce() {
     container.appendChild(newCanvas);
     canvas = newCanvas;
     ctx = canvas.getContext("2d");
+    if(infoBtn && factsBox){infoBtn.style.display = 'flex';}
 
   const events = [
      {target: canvas, types: ["mousedown", "touchstart"], handler: startDrag},
@@ -181,10 +244,18 @@ function createCanvasOnce() {
 /* --- Modules Definitions --- */
 // Pythagoras Module
 const pythagorasModule = {
+    facts:[
+      "The Babylonian tablet Plimton 322 proves they recorded Pythagorean triples over 1,000 years before Pythagoras was even born",
+      "The theorem was used to calculate slopes for construction rather than pure geometry",
+      "Pythagorean triples were recorded over 1000 years before Pythagoras was even born",
+      "Long before Pythagora, ancient Egyptians had used the 3-4-5 triangles to lay out precise right angles",
+      "The Pythagoreans were a bizarre math cult who believed numbers ruled the universe and completely banned eating beans",
+      "Legend says one of Pythagoras's followers, Hippasus, discovered irrational numbers using the theorem and the cult drowned him to keep it a secret"
+    ],
     init() {
         createCanvasOnce();
         const dataPanel = document.getElementById("dataPanel");
-        if (dataPanel) {
+            if (dataPanel) {
             dataPanel.innerHTML = `<h3>Pythagorean Theorem</h3><p class="rule">a² + b² = c²</p><div class="inputs"><div class="input-group"><label>Side a</label><input type="number" id="inputA" value="120"></div><div class="input-group"><label>Side b</label><input type="number" id="inputB" value="100"></div></div><div id="result" class="result show"></div>`;
         }
         setupCalculation();
@@ -218,6 +289,11 @@ const pythagorasModule = {
 
 // Congruence Module
 const congruenceModule = {
+    facts: [
+      "In the middle ages, if a student couldn't master the proof of the Isosceles Triangle Congruence Theorem, it was proof they weren't smart enough for advanced mathematics",
+      "Congruence is the secret behind Origami!",
+      "Honeybees build congruent hexagonal cells that fit perfectly together, maximizing strength and space efficiency"
+    ],
     init() {
         createCanvasOnce();
         if (!labState.mode) labState.mode = 'SSS';
@@ -292,6 +368,14 @@ function attachCongListeners() {
 
 // Polygons Module
 const polygonModule = {
+    facts: [
+      "At age 19, Gauss proved that a regular 17-sided polygon (a heptadecagon) can be constructed using only a compass and straightedge",
+      "The British 50p and 20p coins look round when rolling, but they're actually heptagons",
+      "The more sides a regular polygon gains the more circular it gets!",
+      "The British 50p and 20p coins are Reuleaux Polygons, they have the same diameter at any angle, so they work perfectly in vending machines",
+      "The apeirogon is the theoretical beast that comes closest to being a circle (has infinite sides)",
+      "A regular polygon can be divided from its center into congruent triangles, with one triangle for each side"
+    ],
     init() {
         createCanvasOnce();
         renderPolygonUI();
@@ -348,6 +432,10 @@ const polygonModule = {
 
 // Circles Module
 const circleModule = {
+    facts: [
+      "In 1897 an American proposed law nearly redefined π to 3.2 setting it to 3.2 by mistake. (Historic embarrassment)",
+      "For centuries, ancient mathematicians were obsessed with squaring the circle, they proved in 1882 that constructing a square equal in area to a circle with only a compass and straightedge is impossible"
+    ],
     init() {
         createCanvasOnce();
         labState.circleRadiusCm = 5;
@@ -425,54 +513,41 @@ const subtendedAnglesModule = {
     cyclicPoints: [],
 
     refreshCyclicQuad() {
+        const quarter = TAU / 4;
         let pts = [];
-        for (let i = 0; i < 4; i++) pts.push(Math.random() * TAU);
+        for (let i = 0; i < 4; i++) {
+         const start = i * quarter;
+         const angle = Math.random() * quarter + start;
+        pts.push(angle);
+        }
         this.cyclicPoints = pts.sort((a, b) => a - b);
     },
 
     modes: {
         'Default view': {
-            html: `
-                <p style="font-size:0.85em; color:#6d4c41; margin-bottom:15px;">Drag points A, B, or C to observe how the angles change.</p>
-                <div style="padding:12px; border:2px dashed #bcaaa4; border-radius:8px; background:rgba(239,235,233,0.3); text-align:left;">
-                    <div style="font-size:0.9em; line-height:1.8;">
-                        Central Angle (∠AOB): <b style="color:#f39c12;"><span id="valCentral">0</span>°</b><br>
-                        Inscribed Angle (∠ACB): <b style="color:#4e342e;"><span id="valInscribed">0</span>°</b>
-                    </div>
-                </div>
-                <p style="margin-top:15px; font-size:0.8em; color:#8d6e63;">
-                    <i>The orange arc AB subtends both angles.</i>
-                </p>`,
+            html: showView.default,
+            facts: [
+              "The central angle is always exactly twice the measure of the inscribed angle",
+              "A central angle has its vertex at the center of a circle, while an inscribed angle has its vertex on the circle's edge",
+              "The central angle has two radii as its sides",
+              "The measure of the central angle is equal to the measure of its intercepted arc (AB)",
+              "The measure of the inscribed angle is exactly half the measure of its intercepted arc (AB)"
+            ],
             init: (ctx) => {
                 ctx.elements.vC = document.getElementById("valCentral");
                 ctx.elements.vI = document.getElementById("valInscribed");
             }
         },
-        'inscribed-inscribed': {
-            html: `
-                <p style="font-size:0.85em; color:#6d4c41; margin-bottom:15px;">Exploring the Inscribed Angle Theorem.</p>
-                <div style="padding:12px; border:2px dashed #bcaaa4; border-radius:8px; background:rgba(239,235,233,0.3); text-align:left;">
-                    <ul class="Slist" style="margin:0; padding-left:20px; font-size:0.9em; line-height:1.8; color:#4e342e;">
-                        <li>Inscribed angle: An angle formed by two chords in a circle.</li>
-                        <li>Measure of each inscribed angle = <b>1/2</b> measure of <span style="color: #f39c12; font-weight: bold;">AB</span> arc.</li>
-                        <li>All inscribed angles subtended by the same arc <span style="color: #f39c12; font-weight: bold;">AB</span> are <b>equal</b> in measure.</li>
-                    </ul>
-                </div>`,
+        'Inscribed Angles': {
+            html: showView.inscribed,
+            facts: [
+              "Each inscribed angle has two chords as its sides",
+              "Legend says Thales sacrificed an ox to the gods in celebration after proving that any angle inscribed in a semicircle is a right angle (90°)"
+            ],
             init: () => {}
         },
-        'Cyclic quad': {
-            html: `
-                <p style="font-size:0.85em; color:#6d4c41; margin-bottom:15px;">Exploring Cyclic Quadrilaterals.</p>
-                <div style="padding:12px; border:2px dashed #bcaaa4; border-radius:8px; background:rgba(239,235,233,0.3); text-align:left;">
-                    <ul class="Slist" style="margin:0; padding-left:20px; font-size:0.9em; line-height:1.6; color:#4e342e;">
-                        <li>A cyclic quadrilateral has all its four vertices on the circumference of the circle</li>
-                        <li>Opposite angles in a cyclic quad add up to 180° <b>(supplementary)</b>.</li>
-                        <li>Exterior angle is equal to the interior opposite angle.</li>
-                    </ul>
-                </div>
-                <div style="margin-top:20px; text-align:center;">
-                    <button id="refresh-quad-btn" style="background:orange; color:white; border:none; padding:8px 20px; border-radius:4px; cursor:pointer; font-weight:bold;">Refresh Quad</button>
-                </div>`,
+        'Cyclic Quadrilateral': {
+            html: showView.cyclic,
             init: (ctx) => {
                 const btn = document.getElementById("refresh-quad-btn");
                 if (btn) {
@@ -484,7 +559,6 @@ const subtendedAnglesModule = {
                 if (ctx.cyclicPoints.length === 0) ctx.refreshCyclicQuad();
             }
         },
-        'Y': { html: `<p>Feature Y content here.</p>`, init: () => {} }
     },
 
     init() {
@@ -561,7 +635,7 @@ const subtendedAnglesModule = {
         ctx.stroke();
 
         // 2. Route Drawing Based on View Mode
-        if (this.viewMode === 'Cyclic quad') {
+        if (this.viewMode === 'Cyclic Quadrilateral') {
             const pts = this.cyclicPoints.map(ang => ({
                 x: cx + r * Math.cos(ang),
                 y: cy + r * Math.sin(ang),
@@ -637,7 +711,7 @@ const subtendedAnglesModule = {
             const start = flipped ? B : A, end = flipped ? A : B;
             const sweep = positiveDiff(start, end);
 
-            if (this.viewMode === 'inscribed-inscribed') {
+            if (this.viewMode === 'Inscribed Angles') {
                 const majorSweep = TAU - sweep;
                 const offsets = [0.2, 0.5, 0.8]; // add another % and a fourth triangle will be there
                 offsets.forEach(offset => {
@@ -900,7 +974,11 @@ function renderPolygonUI() {
                 </div>
             </div>
             <div id="polyStats" style="text-align:left; padding:12px; border:2px dashed #bcaaa4; border-radius:8px; background: rgba(239, 235, 233, 0.3); color: #6d4c41; min-height: 100px;"></div>
-        </div>`;
+        </div>
+        <p style="margin-top:15px; font-size:0.8em; color:#8d6e63;">
+                    <i>The area of a regular polygon with n number of sides and length of its side is X is:
+                    ¼ nx² cot π/n.</i>
+                </p>`;
     attachPolyListeners();
     updatePolygonStats(polySides, parseFloat(currentSideCm));
 }
@@ -995,4 +1073,4 @@ function renderCirclePropertiesUI() {
             draw();
         };
     }
-}
+  
