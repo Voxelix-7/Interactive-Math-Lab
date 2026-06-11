@@ -13,28 +13,28 @@ const polygonNames = {
 
 const showView = {
   default: `
-    <p class="subtended-description">Drag points A, B, or C to observe how the angles change.</p>
+    <p class="viewData">Drag points A, B, or C to observe how the angles change.</p>
     <div class="data-container">
         <div style="font-size:0.9em; line-height:1.8;">
             Central Angle (∠AOB): <b style="color:#f39c12;"><span id="valCentral">0</span>°</b><br>
             Inscribed Angle (∠ACB): <b style="color:#4e342e;"><span id="valInscribed">0</span>°</b>
         </div>
     </div>
-    <p style="margin-top:15px; font-size:0.8em; color:#8d6e63;">
-        <i>The orange arc AB subtends both angles.</i>
+    <p class="lab-note">
+    The orange arc AB subtends both angles.
     </p>`,
-  inscribed: `<p class="subtended-description">Exploring the Inscribed Angle Theorem.</p>
+  inscribed: `<p class="viewData">Exploring the Inscribed Angle Theorem.</p>
     <div class="data-container">
-        <ul class="Slist" style="margin:0; padding-left:20px; font-size:0.9em; line-height:1.8; color:#4e342e;">
+        <ul class="Slist">
             <li>Inscribed angle: An angle formed by two chords in a circle.</li>
             <li>Measure of each inscribed angle = <b>1/2</b> measure of <span style="color: #f39c12; font-weight: bold;">AB</span> arc.</li>
             <li>All inscribed angles subtended by the same arc <span style="color: #f39c12; font-weight: bold;">AB</span> are <b>equal</b> in measure.</li>
         </ul>
     </div>`,
   cyclic: `
-    <p class="subtended-description">Exploring Cyclic Quadrilaterals.</p>
+    <p class="viewData">Exploring Cyclic Quadrilaterals.</p>
     <div class="data-container">
-        <ul class="Slist" style="margin:0; padding-left:20px; font-size:0.9em; line-height:1.6; color:#4e342e;">
+        <ul class="Slist">
             <li>A cyclic quadrilateral has all its four vertices on the circumference of the circle</li>
             <li>Opposite angles in a cyclic quad add up to 180° <b>(supplementary)</b>.</li>
             <li>Exterior angle is equal to the interior opposite angle.</li>
@@ -46,21 +46,22 @@ const showView = {
 let labState = {
     active: 'none', 
     mode: 'SAS',   
-    sideA: 120,
+    sideA: 120,//Pythagoras 
     sideB: 100,
     tri: { c: 12, b: 10, a: 60, angleB: 60 },    // Congruence triangle 
-    targets: { // nested object
+    targets: { // nested object, congruence
         SSS: {},
         SAS: {},
         ASA: {}
     },
     polySides: 6,
     polyRadius: 100,
-    showDecomposition: false,
+    showDecomposition: false, // Polygons
     circleRadiusCm: 5, // Circle
-    originX: 180,
+    originX: 250, // Pythagoras
     originY: 250,
-    anglePoints: {
+    tangentLab: {tangentAngle: 0.8, externalAngle: 0.2, externalDistance: 190},
+    anglePoints: { // SubtendedAngles 
       A: 0,
       B: 1.5,
       C: 3.5,
@@ -200,7 +201,8 @@ window.onload = function() {
     congruenceBtn: congruenceModule,
     subtendedAnglesBtn: subtendedAnglesModule,
     polygonBtn: polygonModule,
-    circlePropsBtn: circleModule
+    circlePropsBtn: circleModule,
+    tangentBtn: tangentSecantModule
     };
     Object.entries(labs).forEach(([btnId, module]) => {
     setupLab(btnId, () => {
@@ -773,6 +775,266 @@ const subtendedAnglesModule = {
     }
 };
 
+const tangentViews = {
+  radius: `
+    <p class="viewData">
+      Drag point T around the circle.
+    </p>
+
+    <div class="data-container">
+      <div style="font-size:0.9em; line-height:1.8;">
+        Radius-Tangent Angle:
+        <b style="color:#f39c12;">90°</b>
+      </div>
+    </div>
+  `,
+
+  equal: `
+    <p class="viewData">
+      Drag point P to explore tangent lengths.
+    </p>
+
+    <div class="data-container">
+      <div style="font-size:0.9em; line-height:1.8;">
+        PA:
+        <b style="color:#f39c12;">
+          <span id="tanAVal">0</span>
+        </b>
+        <br>
+
+        PB:
+        <b style="color:#f39c12;">
+          <span id="tanBVal">0</span>
+        </b>
+      </div>
+    </div>
+  `
+};
+
+const tangentSecantModule = {
+
+  viewMode: "Radius & Tangent",
+
+  elements: {},
+
+  modes: {
+
+    "Radius & Tangent": {
+      html: tangentViews.radius,
+      facts: [
+        "A tangent touches a circle at exactly one point.",
+        "The radius to a tangent point is always perpendicular to the tangent.",
+        "A circle can have infinitely many tangents."
+      ]
+    },
+
+    "Equal Tangents": {
+      html: tangentViews.equal,
+      facts: [
+        "Tangents from the same external point are equal.",
+        "This theorem is often used to prove quadrilaterals are cyclic."
+      ]
+    }
+
+  },
+
+  init() {
+
+    createCanvasOnce();
+
+    const panel = document.getElementById("dataPanel");
+
+    panel.innerHTML = `
+      <div class="menu-container">
+        <button id="show-btn">Show ▼</button>
+
+        <div id="dropdown-menu">
+
+          ${Object.keys(this.modes)
+            .map(mode => `
+              <div
+                class="menu-item"
+                data-mode="${mode}">
+                ${mode}
+              </div>
+            `)
+            .join("")}
+
+        </div>
+      </div>
+
+      <div style="padding:15px;">
+        <h3>Tangents & Secants Lab</h3>
+        <div id="dynamic-content"></div>
+      </div>
+    `;
+
+    this.updateView();
+
+    const btn = document.getElementById("show-btn");
+    const menu = document.getElementById("dropdown-menu");
+
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      menu.classList.toggle("show-flex");
+    };
+
+    document.querySelectorAll(".menu-item")
+      .forEach(item => {
+
+      item.onclick = () => {
+
+        this.viewMode =
+          item.getAttribute("data-mode");
+
+        menu.classList.remove("show-flex");
+
+        this.updateView();
+
+        draw();
+      };
+    });
+
+    document.addEventListener("click",
+      () => menu.classList.remove("show-flex"));
+  },
+
+  updateView() {
+
+    const container =
+      document.getElementById("dynamic-content");
+
+    container.innerHTML =
+      this.modes[this.viewMode].html;
+
+    if (this.viewMode === "Equal Tangents") {
+
+      this.elements.aVal =
+        document.getElementById("tanAVal");
+
+      this.elements.bVal =
+        document.getElementById("tanBVal");
+    }
+
+    this.updateStats();
+  },
+
+  updateStats() {
+
+    if (this.viewMode !== "Equal Tangents")
+      return;
+
+    const r = 110;
+
+    const d =
+      labState.tangentLab.externalDistance;
+
+    const tangentLength =
+      Math.sqrt(d * d - r * r);
+
+    this.elements.aVal.textContent =
+      tangentLength.toFixed(1);
+
+    this.elements.bVal.textContent =
+      tangentLength.toFixed(1);
+  },
+
+  draw(ctx) {
+
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+    const r = 110;
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, TAU);
+    ctx.strokeStyle = "#bcaaa4";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    if (this.viewMode === "Radius & Tangent") {
+
+      const t =
+        labState.tangentLab.tangentAngle;
+
+      const px = cx + r * Math.cos(t);
+      const py = cy + r * Math.sin(t);
+
+      const tx = -Math.sin(t);
+      const ty = Math.cos(t);
+
+      ctx.beginPath();
+      ctx.moveTo(px - tx * 150,
+                 py - ty * 150);
+
+      ctx.lineTo(px + tx * 150,
+                 py + ty * 150);
+
+      ctx.strokeStyle = "#f39c12";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(px, py);
+
+      ctx.strokeStyle = "#4e342e";
+      ctx.stroke();
+
+      drawDragger({x:px,y:py});
+
+    } else {
+
+      const angle =
+        labState.tangentLab.externalAngle;
+
+      const dist =
+        labState.tangentLab.externalDistance;
+
+      const px =
+        cx + dist * Math.cos(angle);
+
+      const py =
+        cy + dist * Math.sin(angle);
+
+      const alpha =
+        Math.acos(r / dist);
+
+      const centerAngle =
+        Math.atan2(py - cy, px - cx);
+
+      const a =
+        centerAngle + alpha;
+
+      const b =
+        centerAngle - alpha;
+
+      const ax =
+        cx + r * Math.cos(a);
+
+      const ay =
+        cy + r * Math.sin(a);
+
+      const bx =
+        cx + r * Math.cos(b);
+
+      const by =
+        cy + r * Math.sin(b);
+
+      ctx.beginPath();
+      ctx.moveTo(px, py);
+      ctx.lineTo(ax, ay);
+      ctx.moveTo(px, py);
+      ctx.lineTo(bx, by);
+
+      ctx.strokeStyle = "#f39c12";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      
+      this.updateStats();
+    }
+  }
+};
                 
 /* --- Drawing Loop --- */
 function draw() {
@@ -912,7 +1174,28 @@ function startDrag(e) {
         if (checkHit(labState.anglePoints.A)) dragging = "circleA";
         else if (checkHit(labState.anglePoints.B)) dragging = "circleB";
         else if (checkHit(labState.anglePoints.C)) dragging = "circleC";
+    } else if (currentModule === tangentSecantModule) {
+  const cx = canvas.width / 2;
+  const cy = canvas.height / 2;
+  const r = 110;
+  const pos = { x, y };
+
+  if (tangentSecantModule.viewMode === "Radius & Tangent") {
+    const tx = cx + r * Math.cos(labState.tangentLab.tangentAngle);
+    const ty = cy + r * Math.sin(labState.tangentLab.tangentAngle);
+
+    if (Math.hypot(pos.x - tx, pos.y - ty) < 25) {
+      dragging = "tangentPoint";
     }
+  } else {
+    const px = cx + labState.tangentLab.externalDistance * Math.cos(labState.tangentLab.externalAngle);
+    const py = cy + labState.tangentLab.externalDistance * Math.sin(labState.tangentLab.externalAngle);
+
+    if (Math.hypot(pos.x - px, pos.y - py) < 25) {
+      dragging = "externalPoint";
+    }
+  }
+}
 }
 
 function drag(e) {
@@ -930,6 +1213,23 @@ function drag(e) {
         else if (dragging === "C") labState.sideB = Math.max(1, Math.min(500, (labState.originY - y) / s));
         updateInputsFromTriangle();
     }
+    if (currentModule === tangentSecantModule) {
+  const cx = canvas.width / 2;
+  const cy = canvas.height / 2;
+
+  if (dragging === "tangentPoint") {
+    let angle = Math.atan2(y - cy, x - cx);
+    if (angle < 0) angle += TAU;
+    labState.tangentLab.tangentAngle = angle;
+  }
+
+  if (dragging === "externalPoint") {
+    const dx = x - cx;
+    const dy = y - cy;
+    labState.tangentLab.externalAngle = Math.atan2(dy, dx);
+    labState.tangentLab.externalDistance = Math.max(130, Math.hypot(dx, dy));
+  }
+}
     draw();
 }
 
@@ -975,9 +1275,9 @@ function renderPolygonUI() {
             </div>
             <div id="polyStats" style="text-align:left; padding:12px; border:2px dashed #bcaaa4; border-radius:8px; background: rgba(239, 235, 233, 0.3); color: #6d4c41; min-height: 100px;"></div>
         </div>
-        <p style="margin-top:15px; font-size:0.8em; color:#8d6e63;">
-                    <i>The area of a regular polygon with n number of sides and length of its side is X is:
-                    ¼ nx² cot π/n.</i>
+        <p class="lab-note">
+                    The area of a regular polygon with n number of sides and length of its side is X is:
+                    ¼ nx² cot π/n.
                 </p>`;
     attachPolyListeners();
     updatePolygonStats(polySides, parseFloat(currentSideCm));
@@ -1000,7 +1300,7 @@ function updatePolygonStats(n, sideCm) {
             Int. Angle: ${interiorAngle.toFixed(0)}°<br>
             Area: <b>${area.toFixed(1)}</b> cm²
         </div>`;
-}
+} 
 
 function attachPolyListeners() { // function to listen when the user interacts with the sliders or checkboxes
     const sS = document.getElementById('sidesSlider'), rS = document.getElementById('radiusSlider'), dC = document.getElementById('decompCheck'); // create three separate constants at the exact same time (shortcut)
@@ -1073,4 +1373,4 @@ function renderCirclePropertiesUI() {
             draw();
         };
     }
-  
+}
