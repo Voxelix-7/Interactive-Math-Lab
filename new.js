@@ -61,3 +61,34 @@ let labstate: {
     pointDistance: 190
   }
 };
+
+function resetLab() {
+    const container = document.getElementById("canvas-container");
+    const dataPanel = document.getElementById("dataPanel");
+    if (container) container.innerHTML = ""; 
+    ctx = null; canvas = null;
+    if (dataPanel) dataPanel.innerHTML = '<p class="dataP">Laws and theorems will appear here.</p>';
+    currentModule = null;
+}
+
+// Info Button
+function randomFact() {
+    const facts = currentModule?.getFacts();
+    if (!facts?.length) {
+        factsBox.textContent = "No facts available.";
+        return;
+    }
+    const randomIndex = Math.floor(Math.random() * facts.length);
+    factsBox.textContent = facts[randomIndex];
+}
+
+if(infoBtn && factsBox){
+  infoBtn.addEventListener("mouseenter", () => {
+    factsBox.classList.remove("is-hidden");
+    randomFact();
+  });
+  
+  infoBtn.addEventListener("mouseleave", () => {
+    factsBox.classList.add("is-hidden");
+  });
+}
