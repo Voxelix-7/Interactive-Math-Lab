@@ -13,9 +13,7 @@ const polygonNames = {
   11: "Hendecagon", 12: "Dodecagon"
 };
 
-let labstate: {
-  active: 'none',
-  
+let labState = {
   pythagoras: {
     sideA: 120,
     sideB: 100,
@@ -25,7 +23,7 @@ let labstate: {
 
   congruence: {
     mode: 'SAS',
-    triangle: {
+    tri: { // triangle
       sideB: 10,
       sideC: 12,
       angleA: 60,
@@ -55,7 +53,7 @@ let labstate: {
       B: 1.5,
       C: 3.5
     }
-  }
+  },
 
   tangents: {
     tangentAngle: 0.8,
@@ -209,9 +207,9 @@ function getCircleProps(r) { return { r: r, d: 2 * r, c: 2 * Math.PI * r, a: Mat
 function generateRandomGoal(mode) {
     const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min; // to generate integer numbers between min & max
     if (mode === 'SSS' || mode === 'SAS') {
-        labState.targets[mode] = { c: rand(8, 17), b: rand(7, 14), a: rand(30, 90) };
+        labState.congruence.targets[mode] = { c: rand(8, 17), b: rand(7, 14), a: rand(30, 90) };
     } else if (mode === 'ASA') {
-        labState.targets.ASA = { c: rand(8, 13), a: )(30, 70), angleB: rand(30, 70) };
+        labState.congruence.targets.ASA = { c: rand(8, 13), a: (30, 70), angleB: rand(30, 70) };
     }
 }
 
@@ -319,10 +317,10 @@ const pythagorasModule = {
         updateVisualProof();
     },
     draw(ctx) {
-        const s = getDynamicScale(labState.sideA, labState.sideB);
-        const Ax = labState.originX , Ay = labState.originY;
-        const B = { x: Ax + labState.sideA * s, y: Ay };
-        const C = { x: Ax, y: Ay - labState.sideB * s };
+        const s = getDynamicScale(labState.pythagoras.sideA, labState.pythagoras.sideB);
+        const Ax = labState.pythagoras.originX , Ay = labState.pythagoras.originY;
+        const B = { x: Ax + labState.pythagoras.sideA * s, y: Ay };
+        const C = { x: Ax, y: Ay - labState.pythagoras.sideB * s };
         drawSimpleSquare({x: Ax, y: Ay}, C, "#3498db", -1); // Side B
         drawSimpleSquare({x: Ax, y: Ay}, B, "#e74c3c", 1);
         drawHypotenuseSquare(B, C, "#2ecc71");
@@ -339,17 +337,17 @@ const pythagorasModule = {
         drawDragger(C);
         ctx.fillStyle = "#4e342e";
         ctx.font = "bold 14px Arial";
-        ctx.fillText(`a: ${labState.sideA.toFixed(0)}`, (Ax + B.x)/2 - 15, Ay + 25);
-        ctx.fillText(`b: ${labState.sideB.toFixed(0)}`, Ax - 55, (Ay + C.y)/2);
+        ctx.fillText(`a: ${labState.pythagoras.sideA.toFixed(0)}`, (Ax + B.x)/2 - 15, Ay + 25);
+        ctx.fillText(`b: ${labState.pythagoras.sideB.toFixed(0)}`, Ax - 55, (Ay + C.y)/2);
     }
 };
 function updateVisualProof() {
     const res = document.getElementById("result");
     if (!res) return;
-    const a2 = labState.sideA * labState.sideA, b2 = labState.sideB * labState.sideB, c2 = a2 + b2;
+    const a2 = labState.pythagoras.sideA * labState.pythagoras.sideA, b2 = labState.pythagoras.sideB * labState.pythagoras.sideB, c2 = a2 + b2;
     res.innerHTML = `<div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
-        <span style="color:#e74c3c; font-weight:bold;">${labState.sideA.toFixed(0)}²</span> + 
-        <span style="color:#3498db; font-weight:bold;">${labState.sideB.toFixed(0)}²</span> = 
+        <span style="color:#e74c3c; font-weight:bold;">${labState.pythagoras.sideA.toFixed(0)}²</span> + 
+        <span style="color:#3498db; font-weight:bold;">${labState.pythagoras.sideB.toFixed(0)}²</span> = 
         <span style="color:#2ecc71; font-weight:bold;">${c2.toFixed(0)}</span><br>
         c = <span style="color:#d35400; font-size:1.2em;">${Math.sqrt(c2).toFixed(2)}</span></div>`;
 }
@@ -365,10 +363,10 @@ function setupCalculation() {
     };
     function update() {
         if (inputA.value === "" || inputB.value === "") return; // in case the input bars are empty, do not calculate
-        labState.sideA = processValue(inputA);
-        labState.sideB = processValue(inputB);
-        inputA.value = labState.sideA.toFixed(0);
-        inputB.value = labState.sideB.toFixed(0);
+        labState.pythagoras.sideA = processValue(inputA);
+        labState.pythagoras.sideB = processValue(inputB);
+        inputA.value = labState.pythagoras.sideA.toFixed(0);
+        inputB.value = labState.pythagoras.sideB.toFixed(0);
         draw();
         updateVisualProof();
     }
@@ -377,8 +375,8 @@ function setupCalculation() {
 }
 function updateInputsFromTriangle() {
     const iA = document.getElementById("inputA"), iB = document.getElementById("inputB");
-    if (iA) iA.value = labState.sideA.toFixed(0); 
-    if (iB) iB.value = labState.sideB.toFixed(0);
+    if (iA) iA.value = labState.pythagoras.sideA.toFixed(0); 
+    if (iB) iB.value = labState.pythagoras.sideB.toFixed(0);
     updateVisualProof();
 }
 
@@ -391,7 +389,7 @@ const congruenceModule = {
     ],
     init() {
         createCanvasOnce();
-        if (!labState.mode) labState.mode = 'SSS';
+        if (!labState.congruence.mode) labState.congruence.mode = 'SSS';
         renderCongruenceUI();
         draw();
     },
@@ -407,7 +405,7 @@ function attachCongListeners() {
         input.addEventListener('input', function() {
             const val = parseInt(this.value);
             const key = idToKey[this.id];
-            if (key) labState.tri[key] = val;
+            if (key) labState.congruence.tri[key] = val;
             const label = document.getElementById('val' + this.id);
             if (label) label.innerText = val;
             draw();
@@ -424,7 +422,7 @@ function renderCongruenceUI() {
             <p class="viewData">Choose a Case & Match the Target!</p>
             <div style="display: flex; gap: 8px; margin-bottom: 20px;">
                 ${['SSS', 'SAS', 'ASA'].map(m => {
-                    const active = labState.mode === m;
+                    const active = labState.congruence.mode === m;
                     return `<button onclick="setCongMode('${m}')" style="flex:1; padding:10px; cursor:pointer; border:1px solid #ff9800; border-radius:6px; font-weight:bold; background:${active ? '#ff9800' : '#f5f5f5'}; color:${active ? 'white' : '#616161'}; transition: 0.3s; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">${m}</button>`;
                 }).join('')}
             </div>
@@ -438,11 +436,11 @@ function renderCongruenceUI() {
 }
 function generateCongSliders() {
     const configs = {
-        SSS: [['sideC', 'Base (C)', 5, 20, labState.tri.c], ['sideB', 'Side (B)', 4, 15, labState.tri.b]],
-        SAS: [['sideC', 'Base (C)', 5, 20, labState.tri.c], ['sideB', 'Side (B)', 4, 15, labState.tri.b], ['angleA', 'Angle (∠A)', 30, 120, labState.tri.a]],
-        ASA: [['angleA', 'Angle (∠A)', 30, 75, labState.tri.a], ['sideC', 'Base (C)', 5, 15, labState.tri.c], ['angleB', 'Angle (∠B)', 30, 75, labState.tri.angleB]]
+        SSS: [['sideC', 'Base (C)', 5, 20, labState.congruence.tri.c], ['sideB', 'Side (B)', 4, 15, labState.congruence.tri.b]],
+        SAS: [['sideC', 'Base (C)', 5, 20, labState.congruence.tri.c], ['sideB', 'Side (B)', 4, 15, labState.congruence.tri.b], ['angleA', 'Angle (∠A)', 30, 120, labState.congruence.tri.a]],
+        ASA: [['angleA', 'Angle (∠A)', 30, 75, labState.congruence.tri.a], ['sideC', 'Base (C)', 5, 15, labState.congruence.tri.c], ['angleB', 'Angle (∠B)', 30, 75, labState.congruence.tri.angleB]]
     };
-    return (configs[labState.mode] || []).map(conf => createCongSlider(...conf)).join('');
+    return (configs[labState.congruence.mode] || []).map(conf => createCongSlider(...conf)).join('');
 }
 function createCongSlider(id, label, min, max, val) {
     return `
@@ -453,7 +451,7 @@ function createCongSlider(id, label, min, max, val) {
 }
 
 window.setCongMode = function(mode) {
-    labState.mode = mode;
+    labState.congruence.mode = mode;
     generateRandomGoal(mode); 
     renderCongruenceUI();
     draw();
@@ -495,7 +493,7 @@ function drawCongruence() {
 function drawTriangleShape(d, x, y, color, label, glow, scale) {
     const radA = (d.a || 0) * 0.0174533, cosA = Math.cos(-radA), sinA = Math.sin(-radA);
     let sB = (d.b || 0);
-    if (d.angleB && labState.mode === 'ASA') {
+    if (d.angleB && labState.congruence.mode === 'ASA') {
         const sinC = Math.sin(Math.PI - radA - (d.angleB * 0.0174533));
         if (sinC !== 0) sB = (d.c * Math.sin(d.angleB * 0.0174533)) / sinC;
     }
@@ -523,4 +521,146 @@ function updateCongruenceMessage(isMatched, target, mode) {
     msg.innerHTML = isMatched ? `<b>✨ CONGRUENT! ✨</b>` : 
         (mode === 'ASA' ? `Goal: ∠A=${target.a}°, C=${target.c}, ∠B=${target.angleB}°` : 
         `Goal: C=${target.c}, B=${target.b}${mode==='SAS'?', A='+target.a+'°':''}`);
+}
+
+// Polygons Module
+const polygonModule = {
+    facts: [
+      "At age 19, Gauss proved that a regular 17-sided polygon (a heptadecagon) can be constructed using only a compass and straightedge",
+      "The British 50p and 20p coins look round when rolling, but they're actually heptagons",
+      "The more sides a regular polygon gains the more circular it gets!",
+      "The British 50p and 20p coins are Reuleaux Polygons, they have the same diameter at any angle, so they work perfectly in vending machines",
+      "The apeirogon is the theoretical beast that comes closest to being a circle (has infinite sides)",
+      "A regular polygon can be divided from its center into congruent triangles, with one triangle for each side"
+    ],
+    init() {
+        createCanvasOnce();
+        renderPolygonUI();
+    },
+    draw(ctx) {
+        const { polySides: n, polyRadius: r, showDecomposition: show } = labState;
+        const cx = canvas.width / 2, cy = canvas.height / 2;
+        const points = [], step = (2 * Math.PI) / n;
+        
+        for (let i = 0; i < n; i++) {
+            const angle = i * step - Math.PI / 2;
+            points.push({ x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) });
+        }
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.setLineDash([]); 
+
+        if (show) {
+            ctx.save();
+            ctx.setLineDash([4, 4]); 
+            ctx.strokeStyle = "rgba(129, 199, 132, 0.8)";
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            for (let i = 0; i < n; i++) {
+                ctx.moveTo(cx, cy);
+                ctx.lineTo(points[i].x, points[i].y);
+            }
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        ctx.beginPath();
+        ctx.lineWidth = 3; 
+        ctx.strokeStyle = "#4e342e";
+        ctx.moveTo(points[0].x, points[0].y);
+        for (let i = 1; i < n; i++) ctx.lineTo(points[i].x, points[i].y);
+        ctx.closePath();
+        ctx.stroke();
+
+        points.forEach(p => {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 6, 0, 6.29);
+            ctx.fillStyle = "#f39c12";
+            ctx.fill();
+            ctx.strokeStyle = "white"; 
+            ctx.lineWidth = 2; 
+            ctx.stroke();
+        });
+
+        const sideLength = 2 * r * Math.sin(Math.PI / n) / 10;
+        updatePolygonStats(n, sideLength);
+    }
+};
+function startPolygonLab() {
+    resetLab();
+    currentModule = polygonModule;
+    polygonModule.init();
+    draw();
+}
+function calcPolySideCm(radius, sides) {
+    return (2 * radius * Math.sin(Math.PI / sides) / 10).toFixed(1);
+}
+function attachPolyListeners() {
+    const sidesSlider  = document.getElementById('sidesSlider');
+    const radiusSlider = document.getElementById('radiusSlider');
+    const decompCheck  = document.getElementById('decompCheck');
+    if (sidesSlider) sidesSlider.addEventListener('input', function () {
+        labState.polySides = +this.value;
+        document.getElementById('valSideCount').textContent = this.value;
+        document.getElementById('valSide').textContent = calcPolySideCm(labState.polyRadius, labState.polySides);
+        draw();
+    });
+    if (radiusSlider) radiusSlider.addEventListener('input', function () {
+        labState.polyRadius = +this.value;
+        document.getElementById('valSide').textContent = calcPolySideCm(labState.polyRadius, labState.polySides);
+        draw();
+    });
+    if (decompCheck) decompCheck.addEventListener('change', function () {
+        labState.showDecomposition = this.checked;
+        draw();
+    });
+}
+function updatePolygonStats(n, sideCm) {
+    const stats = document.getElementById("polyStats");
+    if (!stats) return;
+
+    const perimeter = n * sideCm;
+    const interiorAngle = (n - 2) * 180 / n;
+    // Mathematical formula for the area of a regular polygon
+    const area = (n * Math.pow(sideCm, 2)) / (4 * Math.tan(Math.PI / n));
+
+    stats.innerHTML = `
+        <div style="text-align: center; width: 100%;">
+            <b>${polygonNames[n] || n + '-sided polygon'} properties:</b><br>
+            Side: ${sideCm.toFixed(1)} cm | Perimeter: ${perimeter.toFixed(1)} cm<br>
+            Int. Angle: ${interiorAngle.toFixed(0)}°<br>
+            Area: <b>${area.toFixed(1)}</b> cm²
+        </div>`;
+} 
+function renderPolygonUI() {
+    const dataPanel = document.getElementById("dataPanel");
+    if (!dataPanel) return;
+    const { polySides, polyRadius, showDecomposition } = labState;
+    const currentSideCm = (2 * polyRadius * Math.sin(Math.PI / polySides) / 10).toFixed(1);
+
+    dataPanel.innerHTML = `
+        <div id="poly-controls" style="color: #4e342e; padding: 15px; background: transparent;">
+            <h3 style="color: black; margin-top: 0; font-weight: bold; text-align:center;"> Polygon Explorer</h3>
+            <div style="width: 66%; margin: 0 auto;">
+                <div style="margin-bottom:15px;">
+                    <label style="display:block; font-size:0.85em; color: #4e342e;">Number of Sides: <span id="valSideCount">${polySides}</span></label>
+                    <input type="range" id="sidesSlider" min="3" max="12" value="${polySides}" style="width:100%; accent-color:#f39c12; cursor: pointer;">
+                </div>
+                <div style="margin-bottom:15px;">
+                    <label style="display:block; font-size:0.85em; color: #4e342e;">Adjust Size (Side: <span id="valSide">${currentSideCm}</span> cm)</label>
+                    <input type="range" id="radiusSlider" min="40" max="150" value="${polyRadius}" style="width:100%; accent-color:#f39c12; cursor: pointer;">
+                </div>
+                <div style="margin-bottom:20px; display:flex; align-items:center; justify-content: center; gap:10px; border-top: 1px solid #eee; padding-top:10px;">
+                    <input type="checkbox" id="decompCheck" ${showDecomposition ? 'checked' : ''} style="width: 18px; height: 18px; accent-color:#f39c12; cursor: pointer;">
+                    <label style="font-size:0.85em; cursor: pointer; color: #6d4c41;" for="decompCheck">Show Triangle Decomposition</label>
+                </div>
+            </div>
+            <div id="polyStats" style="text-align:left; padding:12px; border:2px dashed #bcaaa4; border-radius:8px; background: rgba(239, 235, 233, 0.3); color: #6d4c41; min-height: 100px;"></div>
+        </div>
+        <p class="lab-note">
+                    The area of a regular polygon with n number of sides and length of its side is X is:
+                    ¼ nx² cot π/n.
+                </p>`;
+    attachPolyListeners();
+    updatePolygonStats(polySides, parseFloat(currentSideCm));
 }
