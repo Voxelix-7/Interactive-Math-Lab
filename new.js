@@ -2,6 +2,8 @@
 let canvas, ctx;
 let currentModule = null;
 let dragging = null;
+const TAU = 2 * Math.PI;
+const RAD2DEG = 180 / Math.PI;
 const cmToPx = 37.8;
 const infoBtn = document.getElementById("info");
 const factsBox = document.getElementById("funFacts");
@@ -91,4 +93,434 @@ if(infoBtn && factsBox){
   infoBtn.addEventListener("mouseleave", () => {
     factsBox.classList.add("is-hidden");
   });
+}
+
+// App Initialization 
+window.onload = function() {
+    ['SSS', 'SAS', 'ASA'].forEach(generateRandomGoal);
+
+    const startBtn = document.getElementById("startBtn");
+    const welcomeScreen = document.querySelector(".welcome-screen");
+    const labInterface = document.getElementById("lab-interface");
+    const menus = [
+    { btn: document.getElementById("geometryBtn"), element: document.getElementById("geoDropdown") },
+    { btn: document.getElementById("circlesBtn"), element: document.getElementById("circlesDropdown") }
+    ];
+    const closeAllMenus = () => {menus.forEach(menu => menu.element?.classList.remove("show-menu"));};
+
+    if (startBtn) {
+        startBtn.addEventListener('click', () => {
+            [welcomeScreen, infoBtn].forEach(element => element.style.display = "none");
+            labInterface.style.display = "flex";
+            setTimeout(() => labInterface.classList.add("fade"), 10);
+        });
+    }
+  
+    menus.forEach(({ btn, element }) => {
+    if (btn && element) {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            element.classList.toggle("show-menu");
+            menus.forEach(other => {
+                if (other.element !== element) other.element?.classList.remove("show-menu");
+            });
+        });
+    }
+    });
+
+    document.addEventListener('click', (e) => {
+    menus.forEach(({ btn, element }) => {
+        if (element && !btn.contains(e.target)) element.classList.remove("show-menu");
+    });
+    });
+
+    const setupLab = (id, callback) => {
+    const btn = document.getElementById(id);
+    if (btn) {
+        btn.addEventListener('click', () => {
+            callback();
+            closeAllMenus();
+        });
+    }
+    };
+
+    // Labs Assignment 
+    const labs = {
+    pythagorasBtn: pythagorasModule,
+    congruenceBtn: congruenceModule,
+    subtendedAnglesBtn: subtendedAnglesModule,
+    polygonBtn: polygonModule,
+    circlePropsBtn: circleModule,
+    tangentBtn: tangentSecantModule
+    };
+    Object.entries(labs).forEach(([btnId, module]) => {
+    setupLab(btnId, () => {
+        if (module && typeof module.init === 'function') {
+            resetLab();
+            currentModule = module;
+            module.init();
+            draw();
+        }
+    });
+});
+};
+
+// Canvas
+function createCanvasOnce() {
+    const container = document.getElementById("canvas-container");
+    if (!container || document.getElementById("myCanvas")) return;
+    const newCanvas = Object.assign(document.createElement('canvas'), {
+      id: "myCanvas",
+      width: 550,
+      height: 400
+    });
+  
+    container.appendChild(newCanvas);
+    canvas = newCanvas;
+    ctx = canvas.getContext("2d");
+    if(infoBtn && factsBox){infoBtn.style.display = 'flex';}
+
+  const events = [
+     {target: canvas, types: ["mousedown", "touchstart"], handler: startDrag},
+     {target: window, types: ["mousemove", "touchmove"], handler: drag},
+     {target: window, types: ["mouseup", "touchend"], handler: stopDrag}
+   ];
+  events.forEach(({target, types, handler}) =>
+    types.forEach(evt => target.addEventListener(evt, handler, {passive: false}))
+  );
+    draw();
+}
+
+// Math functions
+// transforms a confusing negative angle into its positive twin
+function normalize(a) { return (a % TAU + TAU) % TAU; }
+// finding the fastest directional route avoiding unnecessary wraps around the circle
+function shortestDiff(start, end) { let d = end - start; return ((d + Math.PI) % TAU + TAU) % TAU - Math.PI; }
+function positiveDiff(start, end)  { return (end - start + TAU) % TAU; }
+function isOnArc(start, end, t) {
+    const s = normalize(start);
+    const e = normalize(end);
+    const p = normalize(t);
+    return s < e ? (p > s && p < e) : (p > s || p < e);
+}
+function pointOnCircle(cx, cy, r, angle) { return { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) }; }
+function getDynamicScale(a, b) { return 160 / Math.max(a, b, Math.hypot(a, b)); }
+function getCircleProps(r) { return { r: r, d: 2 * r, c: 2 * Math.PI * r, a: Math.PI * r * r }; }
+function generateRandomGoal(mode) {
+    const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min; // to generate integer numbers between min & max
+    if (mode === 'SSS' || mode === 'SAS') {
+        labState.targets[mode] = { c: rand(8, 17), b: rand(7, 14), a: rand(30, 90) };
+    } else if (mode === 'ASA') {
+        labState.targets.ASA = { c: rand(8, 13), a: )(30, 70), angleB: rand(30, 70) };
+    }
+}
+
+// Drawing functions
+function drawDragger(p) {
+    ctx.beginPath(); ctx.arc(p.x, p.y, 10, 0, 7);
+    ctx.fillStyle = "#f39c12"; ctx.fill(); 
+    ctx.strokeStyle = "white"; ctx.lineWidth = 2; ctx.stroke();
+}
+function drawSimpleSquare(p1, p2, color, dir) {
+    const s = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+    ctx.beginPath(); ctx.fillStyle = color + "33"; ctx.strokeStyle = color;
+    p1.x === p2.x ? ctx.rect(p1.x, p1.y, dir * s, -s) : ctx.rect(p1.x, p1.y, s, dir * s);
+    ctx.fill(); ctx.stroke();
+}
+function drawHypotenuseSquare(p1, p2, color) {
+    const dx = p2.x - p1.x, dy = p2.y - p1.y;
+    const ox = -dy, oy = dx;
+    ctx.beginPath(); ctx.fillStyle = color + "33"; ctx.strokeStyle = color;
+    ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y);
+    ctx.lineTo(p2.x + ox, p2.y + oy);
+    ctx.lineTo(p1.x + ox, p1.y + oy);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+}
+function drawArc(ctx, cx, cy, r, start, end, color) {
+    const diff = shortestDiff(start, end);
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, start, start + diff, diff < 0);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 4;
+    ctx.stroke();
+}
+
+// DOM Helpers
+function setPanel(html) {
+    const panel = document.getElementById("dataPanel");
+    if (panel) panel.innerHTML = html;
+    return panel;
+}
+function attachDropdownMenu(onModeChange) {
+    const btn  = document.getElementById("show-btn");
+    const menu = document.getElementById("dropdown-menu");
+    if (!btn || !menu) return;
+    btn.onclick = (e) => { e.stopPropagation(); menu.classList.toggle("show-flex"); };
+    document.querySelectorAll(".menu-item").forEach(item => {
+        item.onclick = () => {
+            menu.classList.remove("show-flex");
+            onModeChange(item.getAttribute("data-mode"));
+        };
+    });
+    document.addEventListener("click", () => menu.classList.remove("show-flex"));
+}
+
+// HTML 
+const subtendedAnglesView = {
+  default: `
+    <p class="viewData">Drag points A, B, or C to observe how the angles change.</p>
+    <div class="data-container">
+        <div style="font-size:0.9em; line-height:1.8;">
+            Central Angle (∠AOB): <b style="color:#f39c12;"><span id="valCentral">0</span>°</b><br>
+            Inscribed Angle (∠ACB): <b style="color:#4e342e;"><span id="valInscribed">0</span>°</b>
+        </div>
+    </div>
+    <p class="lab-note">
+    The orange arc AB subtends both angles.
+    </p>`,
+  inscribed: `<p class="viewData">Exploring the Inscribed Angle Theorem.</p>
+    <div class="data-container">
+        <ul class="Slist">
+            <li>Inscribed angle: An angle formed by two chords in a circle.</li>
+            <li>Measure of each inscribed angle = <b>1/2</b> measure of <span style="color: #f39c12; font-weight: bold;">AB</span> arc.</li>
+            <li>All inscribed angles subtended by the same arc <span style="color: #f39c12; font-weight: bold;">AB</span> are <b>equal</b> in measure.</li>
+        </ul>
+    </div>`,
+  cyclic: `
+    <p class="viewData">Exploring Cyclic Quadrilaterals.</p>
+    <div class="data-container">
+        <ul class="Slist">
+            <li>A cyclic quadrilateral has all its four vertices on the circumference of the circle</li>
+            <li>Opposite angles in a cyclic quad add up to 180° <b>(supplementary)</b>.</li>
+            <li>Exterior angle is equal to the interior opposite angle.</li>
+        </ul>
+    </div>
+    <button id="refresh-quad-btn" class="refresh-quad-btn">Refresh Quad</button>`
+}
+
+// Modules
+// Pythagoras Module
+const pythagorasModule = {
+    facts:[
+      "The Babylonian tablet Plimton 322 proves they recorded Pythagorean triples over 1,000 years before Pythagoras was even born",
+      "The theorem was used to calculate slopes for construction rather than pure geometry",
+      "Pythagorean triples were recorded over 1000 years before Pythagoras was even born",
+      "Long before Pythagora, ancient Egyptians had used the 3-4-5 triangles to lay out precise right angles",
+      "The Pythagoreans were a bizarre math cult who believed numbers ruled the universe and completely banned eating beans",
+      "Legend says one of Pythagoras's followers, Hippasus, discovered irrational numbers using the theorem and the cult drowned him to keep it a secret"
+    ],
+    init() {
+        createCanvasOnce();
+        const dataPanel = document.getElementById("dataPanel");
+            if (dataPanel) {
+            dataPanel.innerHTML = `<h3>Pythagorean Theorem</h3><p class="rule">a² + b² = c²</p><div class="inputs"><div class="input-group"><label>Side a</label><input type="number" id="inputA" value="120"></div><div class="input-group"><label>Side b</label><input type="number" id="inputB" value="100"></div></div><div id="result" class="result show"></div>`;
+        }
+        setupCalculation();
+        updateVisualProof();
+    },
+    draw(ctx) {
+        const s = getDynamicScale(labState.sideA, labState.sideB);
+        const Ax = labState.originX , Ay = labState.originY;
+        const B = { x: Ax + labState.sideA * s, y: Ay };
+        const C = { x: Ax, y: Ay - labState.sideB * s };
+        drawSimpleSquare({x: Ax, y: Ay}, C, "#3498db", -1); // Side B
+        drawSimpleSquare({x: Ax, y: Ay}, B, "#e74c3c", 1);
+        drawHypotenuseSquare(B, C, "#2ecc71");
+        ctx.beginPath();
+        ctx.strokeStyle = "#4e342e";
+        ctx.lineWidth = 3;
+        ctx.moveTo(Ax, Ay);
+        ctx.lineTo(B.x, B.y);
+        ctx.lineTo(C.x, C.y);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.strokeRect(Ax, Ay - 12, 12, 12); // Right angle mark
+        drawDragger(B);
+        drawDragger(C);
+        ctx.fillStyle = "#4e342e";
+        ctx.font = "bold 14px Arial";
+        ctx.fillText(`a: ${labState.sideA.toFixed(0)}`, (Ax + B.x)/2 - 15, Ay + 25);
+        ctx.fillText(`b: ${labState.sideB.toFixed(0)}`, Ax - 55, (Ay + C.y)/2);
+    }
+};
+function updateVisualProof() {
+    const res = document.getElementById("result");
+    if (!res) return;
+    const a2 = labState.sideA * labState.sideA, b2 = labState.sideB * labState.sideB, c2 = a2 + b2;
+    res.innerHTML = `<div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
+        <span style="color:#e74c3c; font-weight:bold;">${labState.sideA.toFixed(0)}²</span> + 
+        <span style="color:#3498db; font-weight:bold;">${labState.sideB.toFixed(0)}²</span> = 
+        <span style="color:#2ecc71; font-weight:bold;">${c2.toFixed(0)}</span><br>
+        c = <span style="color:#d35400; font-size:1.2em;">${Math.sqrt(c2).toFixed(2)}</span></div>`;
+}
+function setupCalculation() {
+    const inputA = document.getElementById("inputA");
+    const inputB = document.getElementById("inputB");
+    if (!inputA || !inputB) return; // to prevent crashing
+    
+    const processValue = (input) => {
+        let val = parseFloat(input.value) || 1; 
+      // if the user inputs messed values, the program is saved by setting value = 1 instead of NaN
+        return Math.max(1, Math.min(500, val));
+    };
+    function update() {
+        if (inputA.value === "" || inputB.value === "") return; // in case the input bars are empty, do not calculate
+        labState.sideA = processValue(inputA);
+        labState.sideB = processValue(inputB);
+        inputA.value = labState.sideA.toFixed(0);
+        inputB.value = labState.sideB.toFixed(0);
+        draw();
+        updateVisualProof();
+    }
+    inputA.addEventListener("input", update);
+    inputB.addEventListener("input", update);
+}
+function updateInputsFromTriangle() {
+    const iA = document.getElementById("inputA"), iB = document.getElementById("inputB");
+    if (iA) iA.value = labState.sideA.toFixed(0); 
+    if (iB) iB.value = labState.sideB.toFixed(0);
+    updateVisualProof();
+}
+
+// Congruence Module
+const congruenceModule = {
+    facts: [
+      "In the middle ages, if a student couldn't master the proof of the Isosceles Triangle Congruence Theorem, it was proof they weren't smart enough for advanced mathematics",
+      "Congruence is the secret behind Origami!",
+      "Honeybees build congruent hexagonal cells that fit perfectly together, maximizing strength and space efficiency"
+    ],
+    init() {
+        createCanvasOnce();
+        if (!labState.mode) labState.mode = 'SSS';
+        renderCongruenceUI();
+        draw();
+    },
+    draw(ctx) {
+        drawCongruence();
+    }
+};
+
+function attachCongListeners() {
+    const inputs = document.querySelectorAll('#cong-sliders input');
+    const idToKey = { sideC: 'c', sideB: 'b', angleA: 'a', angleB: 'angleB' };
+    inputs.forEach(input => {
+        input.addEventListener('input', function() {
+            const val = parseInt(this.value);
+            const key = idToKey[this.id];
+            if (key) labState.tri[key] = val;
+            const label = document.getElementById('val' + this.id);
+            if (label) label.innerText = val;
+            draw();
+        });
+    });
+}
+function renderCongruenceUI() {
+    const dataPanel = document.getElementById("dataPanel");
+    if (!dataPanel) return;
+
+    dataPanel.innerHTML = `
+        <div id="cong-controls" style="color: #4e342e; padding: 15px;">
+            <h3 style="color: black; margin-top: 0; font-weight: bold; text-align: center;">Congruence Lab</h3>
+            <p class="viewData">Choose a Case & Match the Target!</p>
+            <div style="display: flex; gap: 8px; margin-bottom: 20px;">
+                ${['SSS', 'SAS', 'ASA'].map(m => {
+                    const active = labState.mode === m;
+                    return `<button onclick="setCongMode('${m}')" style="flex:1; padding:10px; cursor:pointer; border:1px solid #ff9800; border-radius:6px; font-weight:bold; background:${active ? '#ff9800' : '#f5f5f5'}; color:${active ? 'white' : '#616161'}; transition: 0.3s; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">${m}</button>`;
+                }).join('')}
+            </div>
+            <div style="width: 70%; margin: 0 auto; min-width: 250px;"> 
+                <div id="cong-sliders">${generateCongSliders()}</div>
+            </div>
+            <div id="cong-msg" style="text-align:center; padding:12px; border:2px dashed #bcaaa4; border-radius:8px; margin-top:15px; min-height:45px; background: rgba(239, 235, 233, 0.3); color: #6d4c41;"></div>
+        </div>
+    `;
+    attachCongListeners();
+}
+function generateCongSliders() {
+    const configs = {
+        SSS: [['sideC', 'Base (C)', 5, 20, labState.tri.c], ['sideB', 'Side (B)', 4, 15, labState.tri.b]],
+        SAS: [['sideC', 'Base (C)', 5, 20, labState.tri.c], ['sideB', 'Side (B)', 4, 15, labState.tri.b], ['angleA', 'Angle (∠A)', 30, 120, labState.tri.a]],
+        ASA: [['angleA', 'Angle (∠A)', 30, 75, labState.tri.a], ['sideC', 'Base (C)', 5, 15, labState.tri.c], ['angleB', 'Angle (∠B)', 30, 75, labState.tri.angleB]]
+    };
+    return (configs[labState.mode] || []).map(conf => createCongSlider(...conf)).join('');
+}
+function createCongSlider(id, label, min, max, val) {
+    return `
+        <div style="margin-bottom:12px;">
+            <label style="display:block; font-size:0.85em; color: #4e342e;">${label}: <span id="val${id}" style="color:#ff9800; font-weight:bold;">${val}</span></label>
+            <input type="range" id="${id}" min="${min}" max="${max}" value="${val}" style="width:100%; accent-color:#ff9800; cursor: pointer;">
+        </div>`;
+}
+
+window.setCongMode = function(mode) {
+    labState.mode = mode;
+    generateRandomGoal(mode); 
+    renderCongruenceUI();
+    draw();
+};
+function drawCongruence() {
+    const { tri, mode, targets } = labState;
+    const target = targets[mode];
+    const halfWidth = canvas.width / 2;
+    const safeScale = 9.5;
+    const yPos = canvas.height * 0.7; // places triangles at 70% of canvas height
+
+    const getTriangleMetrics = (t) => {  // centers triangle correctly
+        const radA = (t.a || 0) * 0.0174533;
+      
+        let effectiveSideB = t.b || 0; // law of sines
+        if (mode === 'ASA' && t.angleB) {
+            const radB = t.angleB * 0.0174533;
+            const sinC = Math.sin(Math.PI - radA - radB);
+            effectiveSideB = sinC > 0 ? (t.c * Math.sin(radB)) / sinC : 0;
+        }
+        const leftSwing = t.a > 90 ? Math.abs(Math.cos(radA) * effectiveSideB * safeScale) : 0;
+        return { totalWidth: (t.c * safeScale) + leftSwing, offset: leftSwing };
+    };
+
+    const userMetrics = getTriangleMetrics(tri);
+    const targetMetrics = getTriangleMetrics(target);
+    const startX_User = (halfWidth - userMetrics.totalWidth) / 2 + userMetrics.offset;
+    const startX_Target = halfWidth + (halfWidth - targetMetrics.totalWidth) / 2 + targetMetrics.offset;
+    const isMatched = checkCongruence(tri, target, mode);
+    
+    ctx.setLineDash([5, 5]); ctx.strokeStyle = "#4e342e22";
+    ctx.beginPath(); ctx.moveTo(halfWidth, 20); ctx.lineTo(halfWidth, canvas.height - 20); ctx.stroke();
+    ctx.setLineDash([]);
+
+    drawTriangleShape(tri, startX_User, yPos, isMatched ? "#e65100" : "#4e342e", "Your Triangle", isMatched, safeScale);
+    drawTriangleShape(target, startX_Target, yPos, isMatched ? "#e65100" : "#bcaaa4aa", "Target", false, safeScale);
+    updateCongruenceMessage(isMatched, target, mode);
+}
+function drawTriangleShape(d, x, y, color, label, glow, scale) {
+    const radA = (d.a || 0) * 0.0174533, cosA = Math.cos(-radA), sinA = Math.sin(-radA);
+    let sB = (d.b || 0);
+    if (d.angleB && labState.mode === 'ASA') {
+        const sinC = Math.sin(Math.PI - radA - (d.angleB * 0.0174533));
+        if (sinC !== 0) sB = (d.c * Math.sin(d.angleB * 0.0174533)) / sinC;
+    }
+    const p3x = x + cosA * sB * scale, p3y = y + sinA * sB * scale;
+    ctx.save();
+    if (glow) { ctx.shadowBlur = 15; ctx.shadowColor = "#e65100"; }
+    ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = 4;
+    ctx.moveTo(x, y); ctx.lineTo(x + d.c * scale, y); ctx.lineTo(p3x, p3y);
+    ctx.closePath(); ctx.stroke();
+    ctx.fillStyle = color + "1A"; ctx.fill();
+    ctx.restore();
+    ctx.fillStyle = "#6d4c41aa"; ctx.font = "bold 12px Arial";
+    ctx.fillText(label, x, y + 25);
+}
+function checkCongruence(tri, target, mode) {
+    const dC = Math.abs(tri.c - target.c), dB = Math.abs(tri.b - target.b), dA = Math.abs(tri.a - target.a);
+    if (mode === 'SSS') return dC < 0.5 && dB < 0.5;
+    if (mode === 'SAS') return dC < 0.5 && dB < 0.5 && dA < 1;
+    if (mode === 'ASA') return dA < 1 && dC < 0.5 && Math.abs(tri.angleB - target.angleB) < 1;
+    return false;
+}
+function updateCongruenceMessage(isMatched, target, mode) {
+    const msg = document.getElementById('cong-msg');
+    if (!msg) return;
+    msg.innerHTML = isMatched ? `<b>✨ CONGRUENT! ✨</b>` : 
+        (mode === 'ASA' ? `Goal: ∠A=${target.a}°, C=${target.c}, ∠B=${target.angleB}°` : 
+        `Goal: C=${target.c}, B=${target.b}${mode==='SAS'?', A='+target.a+'°':''}`);
 }
