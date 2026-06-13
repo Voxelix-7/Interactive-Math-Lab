@@ -24,9 +24,9 @@ let labState = {
   congruence: {
     mode: 'SAS',
     tri: { // triangle
-      sideB: 10,
-      sideC: 12,
-      angleA: 60,
+      b: 10, // sideB
+      c: 12, // sideC
+      a: 60, // angleA
       angleB: 60
     },
     targets: {
@@ -209,11 +209,18 @@ function generateRandomGoal(mode) {
     if (mode === 'SSS' || mode === 'SAS') {
         labState.congruence.targets[mode] = { c: rand(8, 17), b: rand(7, 14), a: rand(30, 90) };
     } else if (mode === 'ASA') {
-        labState.congruence.targets.ASA = { c: rand(8, 13), a: (30, 70), angleB: rand(30, 70) };
+        labState.congruence.targets.ASA = { c: rand(8, 13), a: rand(30, 70), angleB: rand(30, 70) };
     }
 }
 
 // Drawing functions
+function draw() {
+   if (!ctx) return;
+   ctx.clearRect(0, 0, canvas.width, canvas.height);
+   if (currentModule && currentModule.draw) {
+    currentModule.draw(ctx);
+   }
+}
 function drawDragger(p) {
     ctx.beginPath(); ctx.arc(p.x, p.y, 10, 0, 7);
     ctx.fillStyle = "#f39c12"; ctx.fill(); 
@@ -295,7 +302,34 @@ const subtendedAnglesView = {
     </div>
     <button id="refresh-quad-btn" class="refresh-quad-btn">Refresh Quad</button>`
 }
+const tangentView = {
+  radius: `
+    <p class="viewData">
+      Drag point T around the circle.
+    </p>
 
+    <div class="data-container">
+      <div style="font-size:0.9em; line-height:1.8;">
+        Radius-Tangent Angle:
+        <b style="color:#f39c12;">90°</b>
+      </div>
+    </div>
+  `,
+
+  equal: `
+    <p class="viewData">
+      Drag point P to explore tangent lengths.
+    </p>
+
+    <div class="data-container">
+      <div style="font-size:0.9em; line-height:1.8;">
+        PA = PB = <b style="color:#f39c12;">
+          <span id="tanBVal">0</span>
+        </b>
+      </div>
+    </div>
+  `
+};
 // Modules
 // Pythagoras Module
 const pythagorasModule = {
@@ -307,6 +341,7 @@ const pythagorasModule = {
       "The Pythagoreans were a bizarre math cult who believed numbers ruled the universe and completely banned eating beans",
       "Legend says one of Pythagoras's followers, Hippasus, discovered irrational numbers using the theorem and the cult drowned him to keep it a secret"
     ],
+    getFacts() { return this.facts; },
     init() {
         createCanvasOnce();
         const dataPanel = document.getElementById("dataPanel");
@@ -387,6 +422,7 @@ const congruenceModule = {
       "Congruence is the secret behind Origami!",
       "Honeybees build congruent hexagonal cells that fit perfectly together, maximizing strength and space efficiency"
     ],
+    getFacts() { return this.facts; },
     init() {
         createCanvasOnce();
         if (!labState.congruence.mode) labState.congruence.mode = 'SSS';
@@ -457,7 +493,7 @@ window.setCongMode = function(mode) {
     draw();
 };
 function drawCongruence() {
-    const { tri, mode, targets } = labState;
+    const { tri, mode, targets } = labState.congruence;
     const target = targets[mode];
     const halfWidth = canvas.width / 2;
     const safeScale = 9.5;
@@ -509,7 +545,7 @@ function drawTriangleShape(d, x, y, color, label, glow, scale) {
     ctx.fillText(label, x, y + 25);
 }
 function checkCongruence(tri, target, mode) {
-    const dC = Math.abs(tri.c - target.c), dB = Math.abs(tri.b - target.b), dA = Math.abs(tri.a - target.a);
+    const dC = Math.abs(labState.congruence.tri.c - target.c), dB = Math.abs(labState.congruence.tri.b - target.b), dA = Math.abs(labState.congruence.tri.a - target.a);
     if (mode === 'SSS') return dC < 0.5 && dB < 0.5;
     if (mode === 'SAS') return dC < 0.5 && dB < 0.5 && dA < 1;
     if (mode === 'ASA') return dA < 1 && dC < 0.5 && Math.abs(tri.angleB - target.angleB) < 1;
@@ -533,12 +569,13 @@ const polygonModule = {
       "The apeirogon is the theoretical beast that comes closest to being a circle (has infinite sides)",
       "A regular polygon can be divided from its center into congruent triangles, with one triangle for each side"
     ],
+    getFacts() { return this.facts; },
     init() {
         createCanvasOnce();
         renderPolygonUI();
     },
     draw(ctx) {
-        const { polySides: n, polyRadius: r, showDecomposition: show } = labState;
+        const { sides: n, radius: r, showDecomposition: show } = labState.polygons;
         const cx = canvas.width / 2, cy = canvas.height / 2;
         const points = [], step = (2 * Math.PI) / n;
         
@@ -600,18 +637,18 @@ function attachPolyListeners() {
     const radiusSlider = document.getElementById('radiusSlider');
     const decompCheck  = document.getElementById('decompCheck');
     if (sidesSlider) sidesSlider.addEventListener('input', function () {
-        labState.polySides = +this.value;
+        labState.polygons.sides = +this.value;
         document.getElementById('valSideCount').textContent = this.value;
-        document.getElementById('valSide').textContent = calcPolySideCm(labState.polyRadius, labState.polySides);
+        document.getElementById('valSide').textContent = calcPolySideCm(labState.polygons.radius, labState.polygons.sides);
         draw();
     });
     if (radiusSlider) radiusSlider.addEventListener('input', function () {
-        labState.polyRadius = +this.value;
-        document.getElementById('valSide').textContent = calcPolySideCm(labState.polyRadius, labState.polySides);
+        labState.polygons.radius = +this.value;
+        document.getElementById('valSide').textContent = calcPolySideCm(labState.polygons.radius, labState.polygons.sides);
         draw();
     });
     if (decompCheck) decompCheck.addEventListener('change', function () {
-        labState.showDecomposition = this.checked;
+        labState.polygons.showDecomposition = this.checked;
         draw();
     });
 }
@@ -635,7 +672,7 @@ function updatePolygonStats(n, sideCm) {
 function renderPolygonUI() {
     const dataPanel = document.getElementById("dataPanel");
     if (!dataPanel) return;
-    const { polySides, polyRadius, showDecomposition } = labState;
+    const { sides: polySides, radius: polyRadius, showDecomposition } = labState.polygons;
     const currentSideCm = (2 * polyRadius * Math.sin(Math.PI / polySides) / 10).toFixed(1);
 
     dataPanel.innerHTML = `
@@ -671,16 +708,17 @@ const circleModule = {
       "In 1897 an American proposed law nearly redefined π to 3.2 setting it to 3.2 by mistake. (Historic embarrassment)",
       "For centuries, ancient mathematicians were obsessed with squaring the circle, they proved in 1882 that constructing a square equal in area to a circle with only a compass and straightedge is impossible"
     ],
+    getFacts() { return this.facts; },
     init() {
         createCanvasOnce();
-        labState.circleRadiusCm = 5;
+        labState.circles.radiusCm = 5;
         renderCirclePropertiesUI();
     },
-    updateRadius(r) { labState.circleRadiusCm = r; },
-    getProps() { return getCircleProps(labState.circleRadiusCm); },
+    updateRadius(r) { labState.circles.radiusCm = r; },
+    getProps() { return getCircleProps(labState.circles.radiusCm); },
     draw(ctx) {
         const drawingScale = 15;
-        const rPx = labState.circleRadiusCm * drawingScale;
+        const rPx = labState.circles.radiusCm * drawingScale;
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
         ctx.save();
@@ -704,7 +742,7 @@ const circleModule = {
         ctx.fillStyle = "#4e342e";
         ctx.font = "bold 14px Arial";
         ctx.textAlign = "center";
-        ctx.fillText(`Radius: ${labState.circleRadiusCm.toFixed(1)} cm`, centerX, centerY - rPx - 15);
+        ctx.fillText(`Radius: ${labState.circles.radiusCm.toFixed(1)} cm`, centerX, centerY - rPx - 15);
         ctx.restore();
     }
 };         
@@ -753,7 +791,7 @@ function attachCircleListeners(){
     if (rIn) {
         rIn.oninput = (e) => {
             const r = parseFloat(e.target.value);
-            labState.circleRadiusCm = r;
+            labState.circles.radiusCm = r;
             if (vR) vR.innerText = r.toFixed(1);
             const props = getCircleProps(r);
             if (sD) sD.innerText = props.d.toFixed(1);
@@ -782,7 +820,7 @@ const subtendedAnglesModule = {
     },
     modes: {
         'Default view': {
-            html: showView.default,
+            html: subtendedAnglesView.default,
             facts: [
               "The central angle is always exactly twice the measure of the inscribed angle",
               "A central angle has its vertex at the center of a circle, while an inscribed angle has its vertex on the circle's edge",
@@ -796,7 +834,7 @@ const subtendedAnglesModule = {
             }
         },
         'Inscribed Angles': {
-            html: showView.inscribed,
+            html: subtendedAnglesView.inscribed,
             facts: [
               "Each inscribed angle has two chords as its sides",
               "Legend says Thales sacrificed an ox to the gods in celebration after proving that any angle inscribed in a semicircle is a right angle (90°)"
@@ -804,7 +842,7 @@ const subtendedAnglesModule = {
             init: () => {}
         },
         'Cyclic Quadrilateral': {
-            html: showView.cyclic,
+            html: subtendedAnglesView.cyclic,
             init: (ctx) => {
                 const btn = document.getElementById("refresh-quad-btn");
                 if (btn) {
@@ -817,7 +855,8 @@ const subtendedAnglesModule = {
             }
         },
     },
-      init() {
+    getFacts() { return this.modes[this.viewMode]?.facts; },
+    init() {
         createCanvasOnce();
         this.renderUI();
         this.updateView();
@@ -868,7 +907,7 @@ const subtendedAnglesModule = {
         if (this.viewMode !== 'Default view') return;
         const { vC, vI } = this.elements;
         if (!vC || !vI) return;
-        const { A, B, C } = labState.anglePoints;
+        const { A, B, C } = labState.subtendedAngles.points;
         const flipped = isOnArc(A, B, C);
         const start = flipped ? B : A;
         const end = flipped ? A : B;
@@ -878,7 +917,8 @@ const subtendedAnglesModule = {
     },
       draw(ctx) {
         const cx = canvas.width / 2, cy = canvas.height / 2;
-        const { A, B, C, radius: r } = labState.anglePoints;
+        const { A, B, C } = labState.subtendedAngles.points;
+        const r = labState.subtendedAngles.radius;
 
         // 1. Draw Common Elements (Main Circle)
         ctx.beginPath();
@@ -1024,3 +1064,200 @@ const subtendedAnglesModule = {
     }
   
 };
+
+// TangentSecantModule 
+const tangentSecantModule = {
+    viewMode: "Radius & Tangent",
+    elements: {},
+
+    modes: {
+        "Radius & Tangent": {
+            html: tangentView.radius,
+            facts: [
+                "A tangent touches a circle at exactly one point.",
+                "The radius to a tangent point is always perpendicular to the tangent.",
+                "A circle can have infinitely many tangents."
+            ]
+        },
+        "Equal Tangents": {
+            html: tangentView.equal,
+            facts: [
+                "Tangents from the same external point are equal.",
+                "This theorem is often used to prove quadrilaterals are cyclic."
+            ]
+        }
+    },
+    getFacts() { return this.modes[this.viewMode]?.facts; },
+    init() {
+        createCanvasOnce();
+        const panel = document.getElementById("dataPanel");
+        panel.innerHTML = `
+            <div class="menu-container">
+                <button id="show-btn">Show ▼</button>
+                <div id="dropdown-menu">
+                    ${Object.keys(this.modes).map(mode =>
+                        `<div class="menu-item" data-mode="${mode}">${mode}</div>`
+                    ).join("")}
+                </div>
+            </div>
+            <div style="padding:15px;">
+                <h3>Tangents & Secants Lab</h3>
+                <div id="dynamic-content"></div>
+            </div>`;
+
+        this.updateView();
+        attachDropdownMenu((mode) => {    // ← uses the new shared helper
+            this.viewMode = mode;
+            this.updateView();
+            draw();
+        });
+    },
+
+    updateView() {
+        const container = document.getElementById("dynamic-content");
+        container.innerHTML = this.modes[this.viewMode].html;
+        if (this.viewMode === "Equal Tangents") {
+            this.elements.bVal = document.getElementById("tanBVal");
+        }
+        this.updateStats();
+    },
+
+    updateStats() {
+        if (this.viewMode !== "Equal Tangents") return;
+        const d = labState.tangents.pointDistance;
+        const r = 110;
+        const length = Math.sqrt(d * d - r * r).toFixed(1);
+        if (this.elements.bVal) this.elements.bVal.textContent = length;
+    },
+
+    draw(ctx) {
+        const cx = canvas.width / 2, cy = canvas.height / 2;
+        const r = 110;
+
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, TAU);
+        ctx.strokeStyle = "#bcaaa4";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        if (this.viewMode === "Radius & Tangent") {
+            const t = labState.tangents.tangentAngle;
+            const px = cx + r * Math.cos(t), py = cy + r * Math.sin(t);
+            const tx = -Math.sin(t),         ty = Math.cos(t);
+
+            ctx.beginPath();
+            ctx.moveTo(px - tx * 150, py - ty * 150);
+            ctx.lineTo(px + tx * 150, py + ty * 150);
+            ctx.strokeStyle = "#f39c12";
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(px, py);
+            ctx.strokeStyle = "#4e342e";
+            ctx.stroke();
+
+            drawDragger({ x: px, y: py });
+
+        } else {
+            const angle = labState.tangents.pointAngle;
+            const dist = labState.tangents.pointDistance;
+            const px = cx + dist * Math.cos(angle), py = cy + dist * Math.sin(angle);
+            const alpha = Math.acos(r / dist);
+            const centerAngle = Math.atan2(py - cy, px - cx);
+            const a = centerAngle + alpha, b = centerAngle - alpha;
+            const ax = cx + r * Math.cos(a), ay = cy + r * Math.sin(a);
+            const bx = cx + r * Math.cos(b), by = cy + r * Math.sin(b);
+
+            ctx.beginPath();
+            ctx.moveTo(px, py); ctx.lineTo(ax, ay);
+            ctx.moveTo(px, py); ctx.lineTo(bx, by);
+            ctx.strokeStyle = "#f39c12";
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            drawDragger({ x: px, y: py });
+            this.updateStats();
+        }
+    }
+};
+
+// Drag System
+function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const t = (e.touches && e.touches[0]) || e;
+    return { x: t.clientX - rect.left, y: t.clientY - rect.top };
+}
+function startDrag(e) {
+    if (!canvas || !currentModule) return;
+    const { x, y } = getPos(e);
+    if (currentModule === pythagorasModule) {
+        const s = getDynamicScale(labState.pythagoras.sideA, labState.pythagoras.sideB);
+        if (Math.hypot(x - (labState.pythagoras.originX + labState.pythagoras.sideA * s), y - labState.pythagoras.originY) < 25) dragging = "B";
+        else if (Math.hypot(x - labState.pythagoras.originX, y - (labState.pythagoras.originY - labState.pythagoras.sideB * s)) < 25) dragging = "C";
+    } else if (currentModule === subtendedAnglesModule) {
+        const cx = canvas.width / 2, cy = canvas.height / 2;
+        const r = labState.subtendedAngles.radius;
+        const checkHit = (angle) => Math.hypot(x - (cx + r * Math.cos(angle)), y - (cy + r * Math.sin(angle))) < 25;
+        if (checkHit(labState.subtendedAngles.points.A)) dragging = "circleA";
+        else if (checkHit(labState.subtendedAngles.points.B)) dragging = "circleB";
+        else if (checkHit(labState.subtendedAngles.points.C)) dragging = "circleC";
+    } else if (currentModule === tangentSecantModule) {
+  const cx = canvas.width / 2;
+  const cy = canvas.height / 2;
+  const r = 110;
+  const pos = { x, y };
+
+  if (tangentSecantModule.viewMode === "Radius & Tangent") {
+    const tx = cx + r * Math.cos(labState.tangents.tangentAngle);
+    const ty = cy + r * Math.sin(labState.tangents.tangentAngle);
+
+    if (Math.hypot(pos.x - tx, pos.y - ty) < 25) {
+      dragging = "tangentPoint";
+    }
+  } else {
+    const px = cx + labState.tangents.pointDistance * Math.cos(labState.tangents.pointAngle);
+    const py = cy + labState.tangents.pointDistance * Math.sin(labState.tangents.pointAngle);
+
+    if (Math.hypot(pos.x - px, pos.y - py) < 25) {
+      dragging = "externalPoint";
+    }
+  }
+}
+}
+function drag(e) {
+    if (!dragging) return;
+    const { x, y } = getPos(e);
+    if (currentModule === subtendedAnglesModule && dragging.startsWith("circle")) {
+        const cx = canvas.width / 2, cy = canvas.height / 2;
+        const key = dragging[6]; // "circleA" → "A"
+        let angle = Math.atan2(y - cy, x - cx);
+        labState.subtendedAngles.points[key] = angle < 0 ? angle + Math.PI * 2 : angle;
+    }
+    else if (currentModule === pythagorasModule) {
+        const s = getDynamicScale(labState.pythagoras.sideA, labState.pythagoras.sideB);
+        if (dragging === "B") labState.pythagoras.sideA = Math.max(1, Math.min(500, (x - labState.pythagoras.originX) / s));
+        else if (dragging === "C") labState.pythagoras.sideB = Math.max(1, Math.min(500, (labState.pythagoras.originY - y) / s));
+        updateInputsFromTriangle();
+    }
+    if (currentModule === tangentSecantModule) {
+  const cx = canvas.width / 2;
+  const cy = canvas.height / 2;
+
+  if (dragging === "tangentPoint") {
+    let angle = Math.atan2(y - cy, x - cx);
+    if (angle < 0) angle += TAU;
+    labState.tangents.tangentAngle = angle;
+  }
+
+  if (dragging === "externalPoint") {
+    const dx = x - cx;
+    const dy = y - cy;
+    labState.tangents.pointAngle = Math.atan2(dy, dx);
+    labState.tangents.pointDistance = Math.max(130, Math.hypot(dx, dy));
+  }
+}
+    draw();
+}
+function stopDrag() { dragging = null; }
