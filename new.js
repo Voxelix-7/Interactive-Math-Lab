@@ -664,3 +664,363 @@ function renderPolygonUI() {
     attachPolyListeners();
     updatePolygonStats(polySides, parseFloat(currentSideCm));
 }
+
+// Circles Module
+const circleModule = {
+    facts: [
+      "In 1897 an American proposed law nearly redefined π to 3.2 setting it to 3.2 by mistake. (Historic embarrassment)",
+      "For centuries, ancient mathematicians were obsessed with squaring the circle, they proved in 1882 that constructing a square equal in area to a circle with only a compass and straightedge is impossible"
+    ],
+    init() {
+        createCanvasOnce();
+        labState.circleRadiusCm = 5;
+        renderCirclePropertiesUI();
+    },
+    updateRadius(r) { labState.circleRadiusCm = r; },
+    getProps() { return getCircleProps(labState.circleRadiusCm); },
+    draw(ctx) {
+        const drawingScale = 15;
+        const rPx = labState.circleRadiusCm * drawingScale;
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, rPx, 0, Math.PI * 2);
+        ctx.strokeStyle = "#d35400";
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        ctx.fillStyle = "rgba(211, 84, 0, 0.1)";
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.lineTo(centerX + rPx, centerY);
+        ctx.strokeStyle = "#4e342e";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, 4, 0, Math.PI * 2);
+        ctx.fillStyle = "#4e342e";
+        ctx.fill();
+        ctx.fillStyle = "#4e342e";
+        ctx.font = "bold 14px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText(`Radius: ${labState.circleRadiusCm.toFixed(1)} cm`, centerX, centerY - rPx - 15);
+        ctx.restore();
+    }
+};         
+
+function renderCirclePropertiesUI() {
+    const dataPanel = document.getElementById("dataPanel");
+    if (!dataPanel) return;
+    dataPanel.innerHTML = `
+        <div id="circle-controls" style="color: #4e342e; padding: 15px; background: transparent;">
+            <h3 style="color: black; margin-top: 0; font-weight: bold; text-align:center;">Circle Properties</h3>
+            
+            <div style="width: 66%; margin: 0 auto; min-width: 250px;">
+                <div style="margin-bottom:15px;">
+                    <label style="display:block; font-size:0.85em; color: #4e342e;">
+                        Radius (r): <span id="valR" style="color:#f39c12; font-weight:bold;">5.0</span> cm
+                    </label>
+                    <input type="range" id="circleRadiusSlider" min="1" max="10" step="0.1" value="5" 
+                           style="width:100%; accent-color:#f39c12; cursor: pointer;">
+                </div>
+            </div>
+
+            <div id="circleStats" style="text-align:left; padding:12px; border:2px dashed #bcaaa4; border-radius:8px; background: rgba(239, 235, 233, 0.3); color: #6d4c41; min-height: 100px;">
+                <div style="text-align: center; width: 100%;"> 
+                    <div style="font-size:0.9em; line-height: 1.8; color: #4e342e;">
+                        Diameter (d): <b><span id="statD">10.0</span></b> cm<br>
+                        Circumference (C): <b><span id="statC">31.4</span></b> cm<br>
+                        <div style="margin-top:8px; padding-top:8px; border-top:1px dashed #bcaaa4;">
+                            Area (A): <b style="font-size:1.1em; color:#bf360c;"><span id="statA">78.5</span></b> cm²
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+  attachCircleListeners();
+}
+function getCircleProps(r) {
+    return { r: r, d: 2 * r, c: 2 * Math.PI * r, a: Math.PI * r * r };
+}
+function attachCircleListeners(){
+  const rIn = document.getElementById("circleRadiusSlider"), // creating 5 constants at once
+          vR = document.getElementById("valR"),
+          sD = document.getElementById("statD"),
+          sC = document.getElementById("statC"),
+          sA = document.getElementById("statA");
+
+    if (rIn) {
+        rIn.oninput = (e) => {
+            const r = parseFloat(e.target.value);
+            labState.circleRadiusCm = r;
+            if (vR) vR.innerText = r.toFixed(1);
+            const props = getCircleProps(r);
+            if (sD) sD.innerText = props.d.toFixed(1);
+            if (sC) sC.innerText = props.c.toFixed(1);
+            if (sA) sA.innerText = props.a.toFixed(1);
+            draw();
+        };
+    }
+}
+
+// SubtendedAnglesModule
+const subtendedAnglesModule = {
+  elements: {},
+    viewMode: 'Default view',
+    cyclicPoints: [],
+
+    refreshCyclicQuad() {
+        const quarter = TAU / 4;
+        let pts = [];
+        for (let i = 0; i < 4; i++) {
+         const start = i * quarter;
+         const angle = Math.random() * quarter + start;
+        pts.push(angle);
+        }
+        this.cyclicPoints = pts.sort((a, b) => a - b);
+    },
+    modes: {
+        'Default view': {
+            html: showView.default,
+            facts: [
+              "The central angle is always exactly twice the measure of the inscribed angle",
+              "A central angle has its vertex at the center of a circle, while an inscribed angle has its vertex on the circle's edge",
+              "The central angle has two radii as its sides",
+              "The measure of the central angle is equal to the measure of its intercepted arc (AB)",
+              "The measure of the inscribed angle is exactly half the measure of its intercepted arc (AB)"
+            ],
+            init: (ctx) => {
+                ctx.elements.vC = document.getElementById("valCentral");
+                ctx.elements.vI = document.getElementById("valInscribed");
+            }
+        },
+        'Inscribed Angles': {
+            html: showView.inscribed,
+            facts: [
+              "Each inscribed angle has two chords as its sides",
+              "Legend says Thales sacrificed an ox to the gods in celebration after proving that any angle inscribed in a semicircle is a right angle (90°)"
+            ],
+            init: () => {}
+        },
+        'Cyclic Quadrilateral': {
+            html: showView.cyclic,
+            init: (ctx) => {
+                const btn = document.getElementById("refresh-quad-btn");
+                if (btn) {
+                    btn.onclick = () => {
+                        ctx.refreshCyclicQuad();
+                        draw();
+                    };
+                }
+                if (ctx.cyclicPoints.length === 0) ctx.refreshCyclicQuad();
+            }
+        },
+    },
+      init() {
+        createCanvasOnce();
+        this.renderUI();
+        this.updateView();
+        this.attachMenuListeners();
+    },
+
+    renderUI() {
+        const dataPanel = document.getElementById("dataPanel");
+        if (!dataPanel) return;
+        dataPanel.style.position = "relative";
+        dataPanel.innerHTML = `
+            <div class="menu-container">
+                <button id="show-btn">Show ▼</button>
+                <div id="dropdown-menu">
+                    ${Object.keys(this.modes).map(m => `<div class="menu-item" data-mode="${m}">${m}</div>`).join('')}
+                </div>
+            </div>
+            <div style="color:#4e342e; padding:15px; text-align:center; font-family: sans-serif;">
+                <h3 style="margin-top:5px; font-weight:bold;">Subtended Angles Lab</h3>
+                <div id="dynamic-content"></div>
+            </div>
+        `;
+    },
+      updateView() {
+        const container = document.getElementById("dynamic-content");
+        const mode = this.modes[this.viewMode];
+        if (!container || !mode) return;
+        container.innerHTML = mode.html;
+        mode.init(this);
+        this.updateStats();
+    },
+
+    attachMenuListeners() {
+        const btn = document.getElementById("show-btn");
+        const menu = document.getElementById("dropdown-menu");
+        btn.onclick = (e) => { e.stopPropagation(); menu.classList.toggle("show-flex"); };
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.onclick = (e) => {
+                this.viewMode = e.target.getAttribute('data-mode');
+                menu.classList.remove("show-flex");
+                this.updateView();
+                draw();
+            };
+        });
+        document.addEventListener('click', () => menu.classList.remove("show-flex"));
+    },
+      updateStats() {
+        if (this.viewMode !== 'Default view') return;
+        const { vC, vI } = this.elements;
+        if (!vC || !vI) return;
+        const { A, B, C } = labState.anglePoints;
+        const flipped = isOnArc(A, B, C);
+        const start = flipped ? B : A;
+        const end = flipped ? A : B;
+        const centralDeg = Math.round(positiveDiff(start, end) * RAD2DEG);
+        vC.innerText = centralDeg;
+        vI.innerText = Math.round(centralDeg / 2);
+    },
+      draw(ctx) {
+        const cx = canvas.width / 2, cy = canvas.height / 2;
+        const { A, B, C, radius: r } = labState.anglePoints;
+
+        // 1. Draw Common Elements (Main Circle)
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, TAU);
+        ctx.strokeStyle = "#bcaaa4aa";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // 2. Route Drawing Based on View Mode
+        if (this.viewMode === 'Cyclic Quadrilateral') {
+            const pts = this.cyclicPoints.map(ang => ({
+                x: cx + r * Math.cos(ang),
+                y: cy + r * Math.sin(ang),
+                ang
+            }));
+
+            // Quadrilateral
+            ctx.beginPath();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = "#4e342e";
+            ctx.moveTo(pts[0].x, pts[0].y);
+            for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+            ctx.closePath();
+            ctx.stroke();
+
+            // Opposite Angles (Pink) — excluding opposite of green
+            for (let i = 0; i < 4; i++) {
+                if (i === 1 || i === 3) continue;
+                const prev = pts[(i + 3) % 4], curr = pts[i], next = pts[(i + 1) % 4];
+                const a1 = Math.atan2(prev.y - curr.y, prev.x - curr.x);
+                const a2 = Math.atan2(next.y - curr.y, next.x - curr.x);
+                const diff = shortestDiff(a1, a2);
+                ctx.beginPath();
+                ctx.strokeStyle = "#ff80ab";
+                ctx.lineWidth = 2;
+                ctx.arc(curr.x, curr.y, 20, a1, a1 + diff, diff < 0);
+                ctx.stroke();
+            }
+                      // Interior Angle (Green)
+            const pP = pts[0], pCu = pts[1], pN = pts[2];
+            const g1 = Math.atan2(pP.y - pCu.y, pP.x - pCu.x);
+            const g2 = Math.atan2(pN.y - pCu.y, pN.x - pCu.x);
+            const gDiff = shortestDiff(g1, g2);
+            ctx.beginPath();
+            ctx.strokeStyle = "#4caf50";
+            ctx.lineWidth = 2;
+            ctx.arc(pCu.x, pCu.y, 20, g1, g1 + gDiff, gDiff < 0);
+            ctx.stroke();
+
+            // Exterior Angle Extension & Arc (Green)
+            const p3 = pts[3], p2 = pts[2], p0 = pts[0];
+            const dirX = p3.x - p2.x;
+            const dirY = p3.y - p2.y;
+            const len = Math.hypot(dirX, dirY) || 1;
+            const exX = p3.x + (dirX / len) * 50;
+            const exY = p3.y + (dirY / len) * 50;
+
+            ctx.beginPath();
+            ctx.strokeStyle = "#4e342e";
+            ctx.lineWidth = 2;
+            ctx.setLineDash([3, 3]);
+            ctx.moveTo(p3.x, p3.y);
+            ctx.lineTo(exX, exY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            const e1 = Math.atan2(exY - p3.y, exX - p3.x);
+            const e2 = Math.atan2(p0.y - p3.y, p0.x - p3.x);
+            const eDiff = shortestDiff(e1, e2);
+            ctx.beginPath();
+            ctx.strokeStyle = "#4caf50";
+            ctx.arc(p3.x, p3.y, 20, e1, e1 + eDiff, eDiff < 0);
+            ctx.stroke();
+
+            pts.forEach(p => drawDragger(p));
+
+        } else {
+            const pA = { x: cx + r * Math.cos(A), y: cy + r * Math.sin(A) };
+            const pB = { x: cx + r * Math.cos(B), y: cy + r * Math.sin(B) };
+
+            const flipped = isOnArc(A, B, C);
+            const start = flipped ? B : A, end = flipped ? A : B;
+            const sweep = positiveDiff(start, end);
+
+            if (this.viewMode === 'Inscribed Angles') {
+                const majorSweep = TAU - sweep;
+                const offsets = [0.2, 0.5, 0.8]; // add another % and a fourth triangle will be there
+                offsets.forEach(offset => {
+                    const angle = normalize(end + majorSweep * offset);
+                    const p = { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
+                    ctx.beginPath();
+                    ctx.lineWidth = 2.5;
+                    ctx.strokeStyle = "#4e342e";
+                    ctx.moveTo(pA.x, pA.y); ctx.lineTo(p.x, p.y); ctx.lineTo(pB.x, pB.y);
+                    ctx.stroke();
+                    drawDragger(p);
+                });
+            } else {
+                const pC = { x: cx + r * Math.cos(C), y: cy + r * Math.sin(C) };
+
+                ctx.beginPath();
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = "#4e342e";
+                ctx.moveTo(pA.x, pA.y);
+                ctx.lineTo(pC.x, pC.y);
+                ctx.lineTo(pB.x, pB.y);
+                ctx.stroke();
+
+                const angAC = Math.atan2(pA.y - pC.y, pA.x - pC.x);
+                const angBC = Math.atan2(pB.y - pC.y, pB.x - pC.x);
+                const d = shortestDiff(angAC, angBC);
+                ctx.beginPath();
+                ctx.strokeStyle = "#4e342e";
+                ctx.lineWidth = 3;
+                ctx.arc(pC.x, pC.y, 25, angAC, angAC + d, d < 0);
+                ctx.stroke();
+
+                drawDragger(pC);
+                ctx.fillStyle = "#4e342e";
+                ctx.fillText("C", pC.x + 12, pC.y - 12);
+            }
+                           ctx.beginPath();
+            ctx.setLineDash([5, 5]);
+            ctx.moveTo(pA.x, pA.y); ctx.lineTo(cx, cy); ctx.lineTo(pB.x, pB.y);
+            ctx.strokeStyle = "#f39c12";
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            ctx.beginPath();
+            ctx.arc(cx, cy, r, start, start + sweep);
+            ctx.strokeStyle = "#f39c12";
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            [pA, pB].forEach(drawDragger);
+            ctx.fillStyle = "#4e342e";
+            ctx.font = "bold 14px Arial";
+            ctx.fillText("A", pA.x + 12, pA.y - 12);
+            ctx.fillText("B", pB.x + 12, pB.y - 12);
+        }
+
+        this.updateStats();
+    }
+  
+};
