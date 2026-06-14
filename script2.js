@@ -454,7 +454,7 @@ function renderCongruenceUI() {
 
     dataPanel.innerHTML = `
         <div id="cong-controls" style="color: #4e342e; padding: 15px;">
-            <h3 style="color: black; margin-top: 0; font-weight: bold; text-align: center;">Congruence Lab</h3>
+            <h3 class="lab-title">Congruence Lab</h3>
             <p class="viewData">Choose a Case & Match the Target!</p>
             <div style="display: flex; gap: 8px; margin-bottom: 20px;">
                 ${['SSS', 'SAS', 'ASA'].map(m => {
@@ -677,7 +677,7 @@ function renderPolygonUI() {
 
     dataPanel.innerHTML = `
         <div id="poly-controls" style="color: #4e342e; padding: 15px; background: transparent;">
-            <h3 style="color: black; margin-top: 0; font-weight: bold; text-align:center;"> Polygon Explorer</h3>
+            <h3 class="lab-title"> Polygon Explorer</h3>
             <div style="width: 66%; margin: 0 auto;">
                 <div style="margin-bottom:15px;">
                     <label style="display:block; font-size:0.85em; color: #4e342e;">Number of Sides: <span id="valSideCount">${polySides}</span></label>
@@ -752,7 +752,7 @@ function renderCirclePropertiesUI() {
     if (!dataPanel) return;
     dataPanel.innerHTML = `
         <div id="circle-controls" style="color: #4e342e; padding: 15px; background: transparent;">
-            <h3 style="color: black; margin-top: 0; font-weight: bold; text-align:center;">Circle Properties</h3>
+            <h3 class="lab-title">Circle Properties</h3>
             
             <div style="width: 66%; margin: 0 auto; min-width: 250px;">
                 <div style="margin-bottom:15px;">
@@ -875,7 +875,7 @@ const subtendedAnglesModule = {
                 </div>
             </div>
             <div style="color:#4e342e; padding:15px; text-align:center; font-family: sans-serif;">
-                <h3 style="margin-top:5px; font-weight:bold;">Subtended Angles Lab</h3>
+                <h3 class="lab-title">Subtended Angles Lab</h3>
                 <div id="dynamic-content"></div>
             </div>
         `;
@@ -1101,7 +1101,7 @@ const tangentSecantModule = {
                 </div>
             </div>
             <div style="padding:15px;">
-                <h3>Tangents & Secants Lab</h3>
+                <h3 class="lab-title">Tangents & Secants Lab</h3>
                 <div id="dynamic-content"></div>
             </div>`;
 
