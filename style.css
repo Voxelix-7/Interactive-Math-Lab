@@ -74,6 +74,12 @@ body {
   background-color: var(--bg-warm);
 }
 
+.lab-title {
+  color: black;
+  margin-top: 0;
+  font-weight: bold;
+  text-align: center;
+}
 /* LEFT COLUMN */
 .column {
   width: 220px;
@@ -124,7 +130,13 @@ body {
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
-
+.data-container{
+padding:12px;
+border:2px dashed #bcaaa4;
+border-radius:8px;
+background:rgba(239,235,233,0.3);
+text-align:left;
+}
 .data-panel {
   margin-top: 20px;
   font-size: 13px;
@@ -133,6 +145,14 @@ body {
 .dataP{
   color:#b2aca2;
 } 
+
+.lab-note{
+  margin-top:15px;
+  font-size:0.8em;
+  color:#8d6e63;
+  font-style: italic;
+}
+
 .geomenu, .Cmenu {
   display: none;
   top:100%;
@@ -166,11 +186,6 @@ body {
 
 .show-menu {
   display: block !important;
-}
-/* pythagorean theorem */
-.data-panel {
-  margin-top: 20px;
-  text-align: center;
 }
 
 /* rule */
@@ -229,14 +244,13 @@ canvas {
   opacity: 1;
 }
 
-/* --- Congruence Magic Style (Refined Warm UI) --- */
+/* --- Congruence --- */
 #congruence-controls {
     background: #fff6e6; /* soft warm card */
     padding: 22px;
     border-radius: 16px;
     border: 1px solid #f0e3d0;
     margin-top: 20px;
-
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
 }
 
@@ -249,14 +263,13 @@ canvas {
 .control-group label {
     display: flex;
     justify-content: space-between;
-
     color: #4e342e;
     font-size: 0.9rem;
     font-weight: 500;
     margin-bottom: 6px;
 }
 
-/* Subtle value styling (numbers on right) */
+/* value styling (numbers on right) */
 .control-group label span {
     color: #d35400;
     font-weight: 600;
@@ -268,8 +281,7 @@ input[type="range"] {
     -webkit-appearance: none;
     width: 100%;
     height: 6px;
-
-    background: #e0d6c8; /* لون هادي */
+    background: #e0d6c8;
     border-radius: 6px;
     outline: none;
 }
@@ -282,10 +294,8 @@ input[type="range"]::-webkit-slider-thumb {
     background: #d35400;
     border-radius: 50%;
     cursor: pointer;
-
     border: 3px solid #fff6e6;
     box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-
     transition: transform 0.15s ease;
 }
 
@@ -340,14 +350,88 @@ input[type="range"]::-webkit-slider-thumb {
   color: var(--primary-warm);
 }
 
+.viewData{
+  font-size: 0.8em;
+  margin-bottom: 15px;
+  color: #6d4c41;
+  text-align: center;
+}
+
+.refresh-quad-btn{
+  margin-top:20px;
+  text-align:center;
+  background:orange;
+  color:white; border:none;
+  padding:8px 20px;
+  border-radius:4px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
 .Slist li::marker {
   color: var(--accent-warm);
   content: "➤ ";
 }
 
+.Slist{
+  margin:0;
+  padding-left:20px;
+  font-size:0.9em;
+  line-height:1.6;
+  color:#4e342e;"
+}
+
 .show-flex {
   display: flex !important;
   flex-direction: column;
+}
+
+.info-wrapper {
+  position: absolute;
+  right: 30px;
+  top: 30px;
+  display: inline-block;
+}
+
+#info{
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  background-color: white;
+  cursor: pointer;
+  right: 10px;
+  top: 5px;
+  transition: all 0.3s ease;
+  z-index: 999;
+}
+
+#info:hover{
+  background-color: #E3F2FD; 
+  border-color: #80D8FF;
+  box-shadow: 0 0 10px rgba(0, 200, 234, 0.6);
+}
+
+#funFacts{
+  width: 250px;
+  position: absolute;
+  right: 0;
+  top: 38px;
+  background: rgba(255, 255, 255, 0.20);
+  backdrop-filter: blur(5px);
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  color: black;
+  font-weight: 300;
+  font-size: 0.9em;
+  line-height: 1.4;
+  z-index: 10;
+
 }
 
 input[type="range"]::-webkit-slider-thumb:hover {
