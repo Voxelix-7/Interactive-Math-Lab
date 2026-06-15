@@ -1,4 +1,5 @@
 import { resetLab } from './ui.js';
+import { resetLab, infoBtn } from './ui.js';
 import { draw } from './canvas.js';
 import { generateRandomGoal } from './math.js';
 import { pythagorasModule } from './modules/pythagoras.js';
@@ -7,6 +8,7 @@ import { polygonModule } from './modules/polygons.js';
 import { circleModule } from './modules/circles.js';
 import { subtendedAnglesModule } from './modules/subtendedAngles.js';
 import { tangentSecantModule } from './modules/tangentSecant.js';
+import { SetCurrentModule } from './state.js';
 
 // App Initialization 
 window.onload = function() {
@@ -70,7 +72,7 @@ window.onload = function() {
     setupLab(btnId, () => {
         if (module && typeof module.init === 'function') {
             resetLab();
-            currentModule = module;
+            setCurrentModule(module);
             module.init();
             draw();
         }
