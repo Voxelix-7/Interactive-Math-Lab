@@ -1,3 +1,7 @@
+import { labState, canvas, TAU, RAD2DEG } from '../state.js';
+import { isOnArc, positiveDiff, shortestDiff, normalize } from '../math.js';
+import { draw, drawDragger, drawArc, createCanvasOnce } from '../canvas.js';
+
 export const subtendedAnglesView = {
   default: `
     <p class="viewData">Drag points A, B, or C to observe how the angles change.</p>
