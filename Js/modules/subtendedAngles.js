@@ -1,4 +1,4 @@
-const subtendedAnglesModule {
+export const subtendedAnglesModule {
   elements: {},
     viewMode: 'Default view',
     cyclicPoints: [],
@@ -130,4 +130,131 @@ const subtendedAnglesModule {
                 ang
             }));
           
+            // Quadrilateral
+            ctx.beginPath();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = "#4e342e";
+            ctx.moveTo(pts[0].x, pts[0].y);
+            for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+            ctx.closePath();
+            ctx.stroke();
+
+            // Opposite Angles (Pink) — excluding opposite of green
+            for (let i = 0; i < 4; i++) {
+                if (i === 1 || i === 3) continue;
+                const prev = pts[(i + 3) % 4], curr = pts[i], next = pts[(i + 1) % 4];
+                const a1 = Math.atan2(prev.y - curr.y, prev.x - curr.x);
+                const a2 = Math.atan2(next.y - curr.y, next.x - curr.x);
+                const diff = shortestDiff(a1, a2);
+                ctx.beginPath();
+                ctx.strokeStyle = "#ff80ab";
+                ctx.lineWidth = 2;
+                ctx.arc(curr.x, curr.y, 20, a1, a1 + diff, diff < 0);
+                ctx.stroke();
+            }
+                      // Interior Angle (Green)
+            const pP = pts[0], pCu = pts[1], pN = pts[2];
+            const g1 = Math.atan2(pP.y - pCu.y, pP.x - pCu.x);
+            const g2 = Math.atan2(pN.y - pCu.y, pN.x - pCu.x);
+            const gDiff = shortestDiff(g1, g2);
+            ctx.beginPath();
+            ctx.strokeStyle = "#4caf50";
+            ctx.lineWidth = 2;
+            ctx.arc(pCu.x, pCu.y, 20, g1, g1 + gDiff, gDiff < 0);
+            ctx.stroke();
+
+            // Exterior Angle Extension & Arc (Green)
+            const p3 = pts[3], p2 = pts[2], p0 = pts[0];
+            const dirX = p3.x - p2.x;
+            const dirY = p3.y - p2.y;
+            const len = Math.hypot(dirX, dirY) || 1;
+            const exX = p3.x + (dirX / len) * 50;
+            const exY = p3.y + (dirY / len) * 50;
+
+            ctx.beginPath();
+            ctx.strokeStyle = "#4e342e";
+            ctx.lineWidth = 2;
+            ctx.setLineDash([3, 3]);
+            ctx.moveTo(p3.x, p3.y);
+            ctx.lineTo(exX, exY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            const e1 = Math.atan2(exY - p3.y, exX - p3.x);
+            const e2 = Math.atan2(p0.y - p3.y, p0.x - p3.x);
+            const eDiff = shortestDiff(e1, e2);
+            ctx.beginPath();
+            ctx.strokeStyle = "#4caf50";
+            ctx.arc(p3.x, p3.y, 20, e1, e1 + eDiff, eDiff < 0);
+            ctx.stroke();
+
+            pts.forEach(p => drawDragger(p));
+          
+        } else {
+            const pA = { x: cx + r * Math.cos(A), y: cy + r * Math.sin(A) };
+            const pB = { x: cx + r * Math.cos(B), y: cy + r * Math.sin(B) };
+
+            const flipped = isOnArc(A, B, C);
+            const start = flipped ? B : A, end = flipped ? A : B;
+            const sweep = positiveDiff(start, end);
+
+            if (this.viewMode === 'Inscribed Angles') {
+                const majorSweep = TAU - sweep;
+                const offsets = [0.2, 0.5, 0.8]; // add another % and a fourth triangle will be there
+                offsets.forEach(offset => {
+                    const angle = normalize(end + majorSweep * offset);
+                    const p = { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
+                    ctx.beginPath();
+                    ctx.lineWidth = 2.5;
+                    ctx.strokeStyle = "#4e342e";
+                    ctx.moveTo(pA.x, pA.y); ctx.lineTo(p.x, p.y); ctx.lineTo(pB.x, pB.y);
+                    ctx.stroke();
+                    drawDragger(p);
+                });
+            } else {
+                const pC = { x: cx + r * Math.cos(C), y: cy + r * Math.sin(C) };
+
+                ctx.beginPath();
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = "#4e342e";
+                ctx.moveTo(pA.x, pA.y);
+                ctx.lineTo(pC.x, pC.y);
+                ctx.lineTo(pB.x, pB.y);
+                ctx.stroke();
+
+                const angAC = Math.atan2(pA.y - pC.y, pA.x - pC.x);
+                const angBC = Math.atan2(pB.y - pC.y, pB.x - pC.x);
+                const d = shortestDiff(angAC, angBC);
+                ctx.beginPath();
+                ctx.strokeStyle = "#4e342e";
+                ctx.lineWidth = 3;
+                ctx.arc(pC.x, pC.y, 25, angAC, angAC + d, d < 0);
+                ctx.stroke();
+
+                drawDragger(pC);
+                ctx.fillStyle = "#4e342e";
+                ctx.fillText("C", pC.x + 12, pC.y - 12);
+            }
+                           ctx.beginPath();
+            ctx.setLineDash([5, 5]);
+            ctx.moveTo(pA.x, pA.y); ctx.lineTo(cx, cy); ctx.lineTo(pB.x, pB.y);
+            ctx.strokeStyle = "#f39c12";
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            ctx.beginPath();
+            ctx.arc(cx, cy, r, start, start + sweep);
+            ctx.strokeStyle = "#f39c12";
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            [pA, pB].forEach(drawDragger);
+            ctx.fillStyle = "#4e342e";
+            ctx.font = "bold 14px Arial";
+            ctx.fillText("A", pA.x + 12, pA.y - 12);
+            ctx.fillText("B", pB.x + 12, pB.y - 12);
+        }
+
+        this.updateStats();
+      }
 };
