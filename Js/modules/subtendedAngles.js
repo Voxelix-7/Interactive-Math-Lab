@@ -1,3 +1,35 @@
+export const subtendedAnglesView = {
+  default: `
+    <p class="viewData">Drag points A, B, or C to observe how the angles change.</p>
+    <div class="data-container">
+        <div style="font-size:0.9em; line-height:1.8;">
+            Central Angle (∠AOB): <b style="color:#f39c12;"><span id="valCentral">0</span>°</b><br>
+            Inscribed Angle (∠ACB): <b style="color:#4e342e;"><span id="valInscribed">0</span>°</b>
+        </div>
+    </div>
+    <p class="lab-note">
+    The orange arc AB subtends both angles.
+    </p>`,
+  inscribed: `<p class="viewData">Exploring the Inscribed Angle Theorem.</p>
+    <div class="data-container">
+        <ul class="Slist">
+            <li>Inscribed angle: An angle formed by two chords in a circle.</li>
+            <li>Measure of each inscribed angle = <b>1/2</b> measure of <span style="color: #f39c12; font-weight: bold;">AB</span> arc.</li>
+            <li>All inscribed angles subtended by the same arc <span style="color: #f39c12; font-weight: bold;">AB</span> are <b>equal</b> in measure.</li>
+        </ul>
+    </div>`,
+  cyclic: `
+    <p class="viewData">Exploring Cyclic Quadrilaterals.</p>
+    <div class="data-container">
+        <ul class="Slist">
+            <li>A cyclic quadrilateral has all its four vertices on the circumference of the circle</li>
+            <li>Opposite angles in a cyclic quad add up to 180° <b>(supplementary)</b>.</li>
+            <li>Exterior angle is equal to the interior opposite angle.</li>
+        </ul>
+    </div>
+    <button id="refresh-quad-btn" class="refresh-quad-btn">Refresh Quad</button>`
+}
+
 export const subtendedAnglesModule {
   elements: {},
     viewMode: 'Default view',
