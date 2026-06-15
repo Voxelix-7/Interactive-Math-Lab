@@ -31,7 +31,7 @@ export const tangentView = {
   `
 };
 
-export const tangentSecantModule {
+export const tangentSecantModule = {
     viewMode: "Radius & Tangent",
     elements: {},
 
