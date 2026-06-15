@@ -34,7 +34,7 @@ export const subtendedAnglesView = {
     <button id="refresh-quad-btn" class="refresh-quad-btn">Refresh Quad</button>`
 }
 
-export const subtendedAnglesModule {
+export const subtendedAnglesModule = {
   elements: {},
     viewMode: 'Default view',
     cyclicPoints: [],
