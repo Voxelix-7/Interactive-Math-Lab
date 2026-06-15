@@ -1,4 +1,4 @@
-// modules/congruence.js — Congruence lab module
+// modules/congruence.js Congruence lab module
 
 import { labState, canvas, ctx } from '../state.js';
 import { draw, createCanvasOnce } from '../canvas.js';

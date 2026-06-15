@@ -1,4 +1,4 @@
-// modules/circles.js — Circle Properties lab module
+// modules/circles.js Circle Properties lab module
 
 import { labState, canvas } from '../state.js';
 import { getCircleProps } from '../math.js';

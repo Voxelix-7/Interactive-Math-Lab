@@ -1,4 +1,4 @@
-// modules/polygons.js — Polygon Explorer lab module
+// modules/polygons.js Polygon Explorer lab module
 
 import { labState, canvas, ctx } from '../state.js';
 import { polygonNames } from '../state.js';

@@ -1,4 +1,4 @@
-// modules/pythagoras.js — Pythagorean Theorem lab module
+// modules/pythagoras.js Pythagorean Theorem lab module
 
 import { labState, canvas } from '../state.js';
 import { getDynamicScale } from '../math.js';
