@@ -89,7 +89,11 @@ export const subtendedAnglesModule = {
     getFacts() { return this.modes[this.viewMode]?.facts; },
     init() {
         createCanvasOnce();
-        
+        attachDropdownMenu((mode) => {    // ← uses the new shared helper
+            this.viewMode = mode;
+            this.updateView();
+            draw();
+        });
         this.renderUI();
         this.updateView();
         this.attachMenuListeners();
