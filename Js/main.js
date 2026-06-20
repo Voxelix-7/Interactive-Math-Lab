@@ -64,8 +64,7 @@ window.onload = function() {
     congruenceBtn: congruenceModule,
     subtendedAnglesBtn: subtendedAnglesModule,
     polygonBtn: polygonModule,
-    circlePropsBtn: circleModule,
-    tangentBtn: tangentSecantModule
+    circlePropsBtn: circleModule
     };
     Object.entries(labs).forEach(([btnId, module]) => {
     setupLab(btnId, () => {
