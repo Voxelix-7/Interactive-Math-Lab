@@ -6,7 +6,7 @@ import { congruenceModule } from './modules/congruence.js';
 import { polygonModule } from './modules/polygons.js';
 import { circleModule } from './modules/circles.js';
 import { subtendedAnglesModule } from './modules/subtendedAngles.js';
-import { tangentSecantModule } from './modules/tangentSecant.js';
+
 import { setCurrentModule } from './state.js';
 
 // App Initialization 
