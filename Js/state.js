@@ -53,12 +53,6 @@ export let labState = {
       B: 1.5,
       C: 3.5
     }
-  },
-
-  tangents: {
-    tangentAngle: 0.8,
-    pointAngle: 0.2,
-    pointDistance: 190
   }
 };
 
