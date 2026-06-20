@@ -1,6 +1,7 @@
 import { labState, canvas, TAU, RAD2DEG } from '../state.js';
 import { isOnArc, positiveDiff, shortestDiff, normalize } from '../math.js';
 import { draw, drawDragger, drawArc, createCanvasOnce } from '../canvas.js';
+import { attachDropdownMenu } from '../ui.js';
 
 export const subtendedAnglesView = {
   default: `
