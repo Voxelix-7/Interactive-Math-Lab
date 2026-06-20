@@ -97,7 +97,6 @@ export const subtendedAnglesModule = {
         });
         this.renderUI();
         this.updateView();
-        this.attachDropdownMenu();
     },
   
     renderUI() {
