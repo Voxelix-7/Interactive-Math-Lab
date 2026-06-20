@@ -89,6 +89,7 @@ export const subtendedAnglesModule = {
     getFacts() { return this.modes[this.viewMode]?.facts; },
     init() {
         createCanvasOnce();
+        
         this.renderUI();
         this.updateView();
         this.attachMenuListeners();
@@ -120,20 +121,7 @@ export const subtendedAnglesModule = {
         this.updateStats();
     },
 
-    attachMenuListeners() {
-        const btn = document.getElementById("show-btn");
-        const menu = document.getElementById("dropdown-menu");
-        btn.onclick = (e) => { e.stopPropagation(); menu.classList.toggle("show-flex"); };
-        document.querySelectorAll('.menu-item').forEach(item => {
-            item.onclick = (e) => {
-                this.viewMode = e.target.getAttribute('data-mode');
-                menu.classList.remove("show-flex");
-                this.updateView();
-                draw();
-            };
-        });
-        document.addEventListener('click', () => menu.classList.remove("show-flex"));
-    },
+    
       updateStats() {
         if (this.viewMode !== 'Default view') return;
         const { vC, vI } = this.elements;
