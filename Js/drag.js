@@ -6,7 +6,7 @@ import { draw } from './canvas.js';
 
 // These are imported lazily to avoid circular imports
 // (canvas.js imports drag.js, so drag.js must not import canvas.js at the top level)
-let pythagorasModule, subtendedAnglesModule, sectorsSegmentsModule;
+let pythagorasModule, subtendedAnglesModule, sectorSegmentModule;
 import('./modules/pythagoras.js').then(m => { pythagorasModule = m.pythagorasModule; });
 import('./modules/subtendedAngles.js').then(m => { subtendedAnglesModule = m.subtendedAnglesModule; });
 import('./modules/sectorSegment.js').then(m => { sectorSegmentModule = m.sectorSegmentModule; });
