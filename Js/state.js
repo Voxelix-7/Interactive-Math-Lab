@@ -54,13 +54,12 @@ export let labState = {
       C: 3.5
     }
   },
-
-  sectorSegment: {
+  
     sector: {
       radius: 110,
       angleDeg: 90
-    }
-  }
+    };
+  
 };
 
 // Other files import these to UPDATE the variables above,
