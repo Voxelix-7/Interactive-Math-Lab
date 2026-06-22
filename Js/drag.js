@@ -1,7 +1,7 @@
 // drag.js — Mouse and touch drag system
 
 import { canvas, currentModule, dragging, setDragging, labState, TAU } from './state.js';
-import { getDynamicScale } from './math.js';
+import { getDynamicScale, toRad } from './math.js';
 import { draw } from './canvas.js';
 
 // These are imported lazily to avoid circular imports
