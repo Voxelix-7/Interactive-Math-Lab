@@ -149,6 +149,5 @@ export const sectorSegmentModule = {
     const p = pointOnCircle(cx, cy, r, end);
     drawDragger(p); 
     },
-
-    
+    this.updateStats
 };
