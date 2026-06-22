@@ -6,9 +6,10 @@ import { draw } from './canvas.js';
 
 // These are imported lazily to avoid circular imports
 // (canvas.js imports drag.js, so drag.js must not import canvas.js at the top level)
-let pythagorasModule, subtendedAnglesModule;
+let pythagorasModule, subtendedAnglesModule, sectorsSegmentsModule;
 import('./modules/pythagoras.js').then(m => { pythagorasModule = m.pythagorasModule; });
 import('./modules/subtendedAngles.js').then(m => { subtendedAnglesModule = m.subtendedAnglesModule; });
+import('./modules/sectorsSegments.js').then(m => { sectorsSegmentsModule = m.sectorsSegmentsModule; });
 
 export function getPos(e) {
     const rect = canvas.getBoundingClientRect();
@@ -35,6 +36,13 @@ export function startDrag(e) {
         else if (checkHit(labState.subtendedAngles.points.B)) setDragging("circleB");
         else if (checkHit(labState.subtendedAngles.points.C)) setDragging("circleC");
 
+    } else if (currentModule === sectorsSegmentsModule) {
+        const cx = canvas.width / 2;
+        const cy = canvas.height / 2;
+        const r = labState.sector.radius;
+        const angle = toRad(labState.sector.angleDeg);
+        const p = { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
+        if (Math.hypot(x - p.x, y - p.y) < 25) { setDragging("sectorPoint"); } 
     }
 }
 
@@ -59,6 +67,15 @@ export function drag(e) {
         import('./modules/pythagoras.js').then(({ updateInputsFromTriangle }) => {
             updateInputsFromTriangle();
         });
+    } else if (currentModule === sectorsSegmentsModule && dragging === "sectorPoint") {
+       const cx = canvas.width / 2;
+       const cy = canvas.height / 2;
+       let angle = Math.atan2(y - cy, x - cx);
+       if (angle < 0) angle += TAU;
+       labState.sector.angleDeg = Math.round(angle * 180 / Math.PI);
+       const input = document.getElementById("angleInput");
+       if (input) input.value = labState.sector.angleDeg;
+       sectorsSegmentsModule.updateStats(); 
     }
 
     draw();

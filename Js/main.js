@@ -6,6 +6,7 @@ import { congruenceModule } from './modules/congruence.js';
 import { polygonModule } from './modules/polygons.js';
 import { circleModule } from './modules/circles.js';
 import { subtendedAnglesModule } from './modules/subtendedAngles.js';
+import { sectorSegmentModule } from './modules/sectorSegment.js';
 import { setCurrentModule } from './state.js';
 
 // App Initialization 
@@ -63,7 +64,8 @@ window.onload = function() {
     congruenceBtn: congruenceModule,
     subtendedAnglesBtn: subtendedAnglesModule,
     polygonBtn: polygonModule,
-    circlePropsBtn: circleModule
+    circlePropsBtn: circleModule,
+    sectorSegmentBtn: sectorSegmentModule
     };
     Object.entries(labs).forEach(([btnId, module]) => {
     setupLab(btnId, () => {

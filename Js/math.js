@@ -37,3 +37,17 @@ export function generateRandomGoal(mode) {
         labState.congruence.targets.ASA = { c: rand(8, 13), a: rand(30, 70), angleB: rand(30, 70) };
     }
 }
+
+// segmentSectorModule
+export function toRad(deg) {
+    return deg * Math.PI / 180;
+}
+
+export function sectorArea(r, deg) {
+    return Math.PI * r * r * deg / 360;
+}
+
+export function sectorPerimeter(r, deg) {
+    const arc = r * toRad(deg);
+    return 2 * r + arc;
+}
