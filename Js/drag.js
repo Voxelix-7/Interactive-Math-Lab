@@ -9,7 +9,7 @@ import { draw } from './canvas.js';
 let pythagorasModule, subtendedAnglesModule, sectorsSegmentsModule;
 import('./modules/pythagoras.js').then(m => { pythagorasModule = m.pythagorasModule; });
 import('./modules/subtendedAngles.js').then(m => { subtendedAnglesModule = m.subtendedAnglesModule; });
-import('./modules/sectorsSegments.js').then(m => { sectorsSegmentsModule = m.sectorsSegmentsModule; });
+import('./modules/sectorSegment.js').then(m => { sectorSegmentModule = m.sectorSegmentModule; });
 
 export function getPos(e) {
     const rect = canvas.getBoundingClientRect();
@@ -36,7 +36,7 @@ export function startDrag(e) {
         else if (checkHit(labState.subtendedAngles.points.B)) setDragging("circleB");
         else if (checkHit(labState.subtendedAngles.points.C)) setDragging("circleC");
 
-    } else if (currentModule === sectorsSegmentsModule) {
+    } else if (currentModule === sectorSegmentModule) {
         const cx = canvas.width / 2;
         const cy = canvas.height / 2;
         const r = labState.sector.radius;
@@ -64,10 +64,9 @@ export function drag(e) {
             labState.pythagoras.sideB = Math.max(1, Math.min(500, (labState.pythagoras.originY - y) / s));
 
         // Import updateInputsFromTriangle from pythagoras module
-        import('./modules/pythagoras.js').then(({ updateInputsFromTriangle }) => {
-            updateInputsFromTriangle();
-        });
-    } else if (currentModule === sectorsSegmentsModule && dragging === "sectorPoint") {
+        import('./modules/pythagoras.js').then(({ updateInputsFromTriangle }) => { updateInputsFromTriangle(); });
+        
+    } else if (currentModule === sectorSegmentModule && dragging === "sectorPoint") {
        const cx = canvas.width / 2;
        const cy = canvas.height / 2;
        let angle = Math.atan2(y - cy, x - cx);
@@ -75,7 +74,7 @@ export function drag(e) {
        labState.sector.angleDeg = Math.round(angle * 180 / Math.PI);
        const input = document.getElementById("angleInput");
        if (input) input.value = labState.sector.angleDeg;
-       sectorsSegmentsModule.updateStats(); 
+       sectorSegmentModule.updateStats(); 
     }
 
     draw();
