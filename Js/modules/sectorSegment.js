@@ -145,9 +145,8 @@ export const sectorSegmentModule = {
     ctx.strokeStyle = "#f39c12";
     ctx.lineWidth = 3;
     ctx.stroke();
-
-    const p = pointOnCircle(cx, cy, r, end);
-    drawDragger(p); 
-    },
-    this.updateStats
+    const p = pointOnCircle(cx, cy, r, end); drawDragger(p);
+        
+    this.updateStats();
+    }
 };
