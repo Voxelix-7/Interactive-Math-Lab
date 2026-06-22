@@ -55,7 +55,7 @@ export let labState = {
     }
   },
 
-  sectorsSegments: {
+  sectorSegment: {
     sector: {
       radius: 110,
       angleDeg: 90
