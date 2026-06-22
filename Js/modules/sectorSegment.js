@@ -110,5 +110,45 @@ export const sectorSegmentModule = {
     angle.addEventListener("input", update);
    },
 
-   
+   updateStats() {
+    if (this.viewMode !== "Circular Sector") return;
+    const area = document.getElementById("sectorAreaVal");
+    const perimeter = document.getElementById("sectorPerimeterVal");
+    if (!area || !perimeter) return;
+    const r = labState.sector.radius;
+    const deg = labState.sector.angleDeg;
+    area.textContent = sectorArea(r, deg).toFixed(1);
+    perimeter.textContent = sectorPerimeter(r, deg).toFixed(1); 
+   },
+
+    draw(ctx) {
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+    const r = labState.sector.radius;
+    const deg = labState.sector.angleDeg;
+    const end = toRad(deg);
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, TAU);
+    ctx.strokeStyle = "#bcaaa4aa";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, 0, end);
+    ctx.closePath();
+    ctx.fillStyle = "#f39c12";
+    ctx.globalAlpha = 0.4;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = "#f39c12";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    const p = pointOnCircle(cx, cy, r, end);
+    drawDragger(p); 
+    },
+
+    
 };
