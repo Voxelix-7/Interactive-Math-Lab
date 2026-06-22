@@ -24,7 +24,7 @@ export const sectorViews = {
             </span>
         </div>
     `,
-    segment: ``
+    segment: `<p>hi</p>`
 };
 
 export const sectorSegmentModule = {
