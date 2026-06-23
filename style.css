@@ -20,7 +20,7 @@ body {
   align-items: center;
   text-align: center;
   background: 
-    linear-gradient(120deg, transparent 40%, rgba(255, 255, 255, 0.10) 50%, transparent 60%) -200% 0 / 200% 100% no-repeat,
+    linear-gradient(120deg, transparent 40%, rgba(255, 255, 255, 0.20) 50%, transparent 60%) -200% 0 / 200% 100% no-repeat,
     linear-gradient(135deg, var(--primary-warm), var(--accent-warm));
   animation: shineOverlay 4s infinite ease-in-out;
 }
