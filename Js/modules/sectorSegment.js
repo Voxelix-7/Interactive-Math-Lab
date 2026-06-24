@@ -127,13 +127,11 @@ export const sectorSegmentModule = {
     const r = labState.sector.radius;
     const deg = labState.sector.angleDeg;
     const end = toRad(deg);
-
     ctx.beginPath();
     ctx.arc(cx, cy, r, 0, TAU);
     ctx.strokeStyle = "#bcaaa4aa";
     ctx.lineWidth = 2;
     ctx.stroke();
-
     ctx.beginPath();
     ctx.moveTo(cx, cy);
     ctx.arc(cx, cy, r, 0, end);
