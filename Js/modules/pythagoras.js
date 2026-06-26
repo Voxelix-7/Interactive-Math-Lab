@@ -55,7 +55,7 @@ export function updateVisualProof() {
     const a2 = labState.pythagoras.sideA * labState.pythagoras.sideA;
     const b2 = labState.pythagoras.sideB * labState.pythagoras.sideB;
     const c2 = a2 + b2;
-    res.innerHTML = `<div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
+    res.innerHTML = `<div class="pythagorasData">
         <span style="color:#e74c3c; font-weight:bold;">${labState.pythagoras.sideA.toFixed(0)}²</span> + 
         <span style="color:#3498db; font-weight:bold;">${labState.pythagoras.sideB.toFixed(0)}²</span> = 
         <span style="color:#2ecc71; font-weight:bold;">${c2.toFixed(0)}</span><br>
