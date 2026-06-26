@@ -205,6 +205,9 @@ text-align:left;
     margin-top: 15px;
     padding-top: 15px;
     border-top: 1px solid #eee;
+    font-weight: bold;
+    font-size: 1.15rem;
+    line-height: 1.7;
 }
 /* inputs container */
 .inputs {
