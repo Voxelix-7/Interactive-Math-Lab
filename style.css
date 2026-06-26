@@ -153,8 +153,12 @@ text-align:left;
 .dataP{
   color:#b2aca2;
 } 
-
-.lab-note{
+.pythagorasData {
+  margin-top: 15px;
+  border-top: 1px solid #eee;
+  padding-top: 15px;
+}
+.lab-note {
   margin-top:15px;
   font-size:0.8em;
   color:#8d6e63;
