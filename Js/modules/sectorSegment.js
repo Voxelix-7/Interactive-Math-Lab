@@ -15,12 +15,10 @@ export const sectorViews = {
                 <input type="number" id="angleInput" value="${labState.sector.angleDeg}">
             </div>
         </div>
-        <div class="result show">
             <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
                 <span style="color: #e74c3c; font-weight: bold;">Area = <span id="sectorAreaVal"></span></span>
                 <span style="color: #3498db; font-weight: bold;">Perimeter = <span id="sectorPerimeterVal"></span></span>
             </div>
-        </div>
     `,
     segment: `<p>hi</p>`
 };
