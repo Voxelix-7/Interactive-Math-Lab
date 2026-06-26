@@ -16,7 +16,8 @@ export const sectorViews = {
             </div>
         </div>
             <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
-                <span style="color: #e74c3c; font-weight: bold;">Area = <span id="sectorAreaVal"></span></span><br>
+                <span style="color: #e74c3c; font-weight: bold;">Area = <span id="sectorAreaVal"></span></span>
+                <br>
                 <span style="color: #3498db; font-weight: bold;">Perimeter = <span id="sectorPerimeterVal"></span></span>
             </div>
     `,
