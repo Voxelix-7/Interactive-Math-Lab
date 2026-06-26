@@ -15,7 +15,7 @@ export const sectorViews = {
                 <input type="number" id="angleInput" value="${labState.sector.angleDeg}">
             </div>
         </div>
-        <div class="result show" style="display: flex; justify-content: space-between;">
+        <div class="pythagorasData">
             <span style="color: #e74c3c;">
                 Area = <span id="sectorAreaVal"></span>
             </span>
