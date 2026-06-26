@@ -201,7 +201,11 @@ text-align:left;
   margin-bottom: 20px;
   color: #444;
 }
-
+.result-panel {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
 /* inputs container */
 .inputs {
   display: flex;
