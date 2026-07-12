@@ -63,9 +63,9 @@ export function updateVisualProof() {
 }
 
 export function setupCalculation() {
+    if (!inputA || !inputB) return; // Prevents crashing if elements don't exist
     const inputA = document.getElementById("inputA");
     const inputB = document.getElementById("inputB");
-    if (!inputA || !inputB) return; // Prevents crashing if elements don't exist
 
     const processValue = (input) => {
         let val = parseFloat(input.value) || 1;
