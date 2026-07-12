@@ -68,7 +68,7 @@ export function setupCalculation() {
     if (!inputA || !inputB) return; // Prevents crashing if elements don't exist
 
     const processValue = (input) => {
-        let val = parseFloat(input.value) || 1 || "";
+        let val = parseFloat(input.value) || 1;
         // If the user inputs invalid values, default to 1 instead of NaN
         return Math.max(1, Math.min(500, val));
     };
