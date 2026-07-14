@@ -95,7 +95,7 @@ export const sectorSegmentModule = {
     const angle = document.getElementById("angleInput");
     if (!radius || !angle) return;
     const update = () => {
-        labState.sector.radius = Math.max(20, Number(radius.value));
+        labState.sector.radius = Number(radius.value);
         labState.sector.angleDeg = Math.max(5, Math.min(360, Number(angle.value)));
         radius.value = labState.sector.radius;
         angle.value = labState.sector.angleDeg;
