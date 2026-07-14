@@ -136,7 +136,7 @@ export const sectorSegmentModule = {
     ctx.globalAlpha = 0.4;
     ctx.fill();
     ctx.globalAlpha = 1;
-    ctx.strokeStyle = "red";
+    ctx.strokeStyle = "#f39c12";
     ctx.lineWidth = 3;
     ctx.stroke();
     const p = pointOnCircle(cx, cy, drawRadius, end); drawDragger(p);
