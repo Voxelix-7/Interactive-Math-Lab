@@ -30,7 +30,11 @@ export const sectorSegmentModule = {
         "Circular Sector": {
             html: sectorViews.sector,
             facts: [
-                "A sector is a pizza-shaped region bounded by two radii and an arc."
+                "A sector is a pizza-shaped region bounded by two radii and an arc.",
+                "The word 'Sector' comes from Latin and it means 'to cut'.",
+                "Ancient astronomers used circle slices (sectors) to measure the positions of stars and planets thousands of years ago.",
+                "Every hour on a clock represents a 30° sector of the full 360° circle.",
+                "Doubling the central angle doubles the sector's area as long as the circle's radius stays the same."
             ],
             init: (ctx) => {
                 ctx.setupInputs();
