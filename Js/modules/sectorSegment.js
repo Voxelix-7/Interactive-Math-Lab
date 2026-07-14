@@ -120,7 +120,7 @@ export const sectorSegmentModule = {
     draw(ctx) {
     const cx = canvas.width / 2;
     const cy = canvas.height / 2;
-    const r = labState.sector.radius;
+    const r = 110;
     const deg = labState.sector.angleDeg;
     const end = toRad(deg);
     ctx.beginPath();
