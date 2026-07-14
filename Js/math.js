@@ -40,7 +40,8 @@ export function generateRandomGoal(mode) {
 
 // segmentSectorModule
 export function toRad(deg) {
-    return deg * Math.PI / 180;
+    let rad =  deg * (Math.PI / 180);
+    return Math.round(rad * 1000) / 1000; //approximates to the nearest thousands
 }
 
 export function sectorArea(r, deg) {
