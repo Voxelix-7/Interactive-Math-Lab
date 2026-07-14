@@ -120,17 +120,17 @@ export const sectorSegmentModule = {
     draw(ctx) {
     const cx = canvas.width / 2;
     const cy = canvas.height / 2;
-    const r = 110;
+    const r = labState.sector.radius;
     const deg = labState.sector.angleDeg;
     const end = toRad(deg);
     ctx.beginPath();
-    ctx.arc(cx, cy, 110, 0, TAU);
+    ctx.arc(cx, cy, r, 0, TAU);
     ctx.strokeStyle = "#bcaaa4aa";
     ctx.lineWidth = 2;
     ctx.stroke();
     ctx.beginPath();
     ctx.moveTo(cx, cy);
-    ctx.arc(cx, cy, 110, 0, end);
+    ctx.arc(cx, cy, r, 0, end);
     ctx.closePath();
     ctx.fillStyle = "#f39c12";
     ctx.globalAlpha = 0.4;
@@ -139,7 +139,7 @@ export const sectorSegmentModule = {
     ctx.strokeStyle = "#f39c12";
     ctx.lineWidth = 3;
     ctx.stroke();
-    const p = pointOnCircle(cx, cy, 110, end); drawDragger(p);
+    const p = pointOnCircle(cx, cy, r, end); drawDragger(p);
         
     this.updateStats();
     }
