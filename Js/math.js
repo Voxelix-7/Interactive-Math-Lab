@@ -39,11 +39,12 @@ export function generateRandomGoal(mode) {
 }
 
 // segmentSectorModule
+// To be used to find length of arc
 export function toRad(deg) {
     let rad =  deg * (Math.PI / 180);
     return Math.round(rad * 1000) / 1000; //approximates to the nearest thousands
 }
-
+// Using degrees law
 export function sectorArea(r, deg) {
     return Math.PI * r * r * deg / 360;
 }
