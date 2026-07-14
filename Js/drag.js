@@ -40,8 +40,8 @@ export function startDrag(e) {
         const cx = canvas.width / 2;
         const cy = canvas.height / 2;
         const r = labState.sector.radius;
-        const angle = toRad(labState.sector.angleDeg);
-        const p = { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
+        const drawRadius = 110;
+        const p = { x: cx + drawRadius * Math.cos(angle), y: cy + drawRadius * Math.sin(angle) };
         if (Math.hypot(x - p.x, y - p.y) < 25) { setDragging("sectorPoint"); } 
     }
 }
