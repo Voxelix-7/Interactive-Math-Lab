@@ -68,7 +68,6 @@ export const sectorSegmentModule = {
         </div>
         <div style="color:#4e342e; padding:15px; text-align:center; font-family:sans-serif;">
             <h3 class="lab-title">Circular Regions Lab</h3>
-            <p class="rule">½r²θ(rad)</p>
             <div id="dynamic-content"></div>
         </div>
     `);
