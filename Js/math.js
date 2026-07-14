@@ -45,7 +45,7 @@ export function toRad(deg) {
 }
 
 export function sectorArea(r, deg) {
-    return Math.PI * r * r * toRad(deg) / 360;
+    return Math.PI * r * r * deg / 360;
 }
 
 export function sectorPerimeter(r, deg) {
