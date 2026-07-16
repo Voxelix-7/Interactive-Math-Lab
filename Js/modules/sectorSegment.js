@@ -58,7 +58,9 @@ export const sectorSegmentModule = {
         "Circular Segment": {
             html: sectorViews.segment,
             facts: [],
-            init: () => {}
+            init: (ctx) => {
+                ctx.setupInputs();
+            }
         }
     },
     getFacts() { return this.modes[this.viewMode]?.facts; },
@@ -149,7 +151,7 @@ export const sectorSegmentModule = {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    if(this.viewMode === 'Circular Sector'){
+    if(this.viewMode === 'Circular Sector') {
         ctx.beginPath();
         ctx.moveTo(cx, cy);
         ctx.arc(cx, cy, drawRadius, 0, end);
