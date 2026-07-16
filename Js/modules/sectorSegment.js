@@ -141,24 +141,30 @@ export const sectorSegmentModule = {
     const drawRadius = 110;
     const deg = labState.sector.angleDeg;
     const end = toRad(deg);
+
+    // Common Main Circle
     ctx.beginPath();
     ctx.arc(cx, cy, drawRadius, 0, TAU);
     ctx.strokeStyle = "#bcaaa4aa";
     ctx.lineWidth = 2;
     ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.arc(cx, cy, drawRadius, 0, end);
-    ctx.closePath();
-    ctx.fillStyle = "#f39c12";
-    ctx.globalAlpha = 0.4;
-    ctx.fill();
-    ctx.globalAlpha = 1;
-    ctx.strokeStyle = "#f39c12";
-    ctx.lineWidth = 3;
-    ctx.stroke();
-    const p = pointOnCircle(cx, cy, drawRadius, end); drawDragger(p);
-        
+
+    if(this.viewMode === 'Circular Sector'){
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, drawRadius, 0, end);
+        ctx.closePath();
+        ctx.fillStyle = "#f39c12";
+        ctx.globalAlpha = 0.4;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.strokeStyle = "#f39c12";
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        const p = pointOnCircle(cx, cy, drawRadius, end); drawDragger(p);
+    } else {
+
+    }
     this.updateStats();
     }
 };
