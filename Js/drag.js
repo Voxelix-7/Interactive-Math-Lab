@@ -40,7 +40,8 @@ export function startDrag(e) {
         const cx = canvas.width / 2;
         const cy = canvas.height / 2;
         const drawRadius = 110;
-        const angle = toRad(labState.sector.angleDeg);
+        const key = sectorSegmentModule.stateKey();
+        const angle = toRad(labState[key].angleDeg);
         const p = { x: cx + drawRadius * Math.cos(angle), y: cy + drawRadius * Math.sin(angle) };
         if (Math.hypot(x - p.x, y - p.y) < 25) { setDragging("sectorPoint"); } 
     }
@@ -69,11 +70,12 @@ export function drag(e) {
     } else if (currentModule === sectorSegmentModule && dragging === "sectorPoint") {
        const cx = canvas.width / 2;
        const cy = canvas.height / 2;
+       const key = sectorSegmentModule.stateKey();
        let angle = Math.atan2(y - cy, x - cx);
        if (angle < 0) angle += TAU;
-       labState.sector.angleDeg = Math.round(angle * 180 / Math.PI);
+       labState[key].angleDeg = Math.round(angle * 180 / Math.PI);
        const input = document.getElementById("angleInput");
-       if (input) input.value = labState.sector.angleDeg;
+       if (input) input.value = labState[key].angleDeg;
        sectorSegmentModule.updateStats(); 
     }
 
