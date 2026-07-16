@@ -1,5 +1,5 @@
 import { labState, canvas, TAU } from '../state.js';
-import { pointOnCircle, toRad, sectorArea, sectorPerimeter, segmentArea } from '../math.js';
+import { pointOnCircle, toRad, sectorArea, sectorPerimeter, segmentArea, normalize } from '../math.js';
 import { draw, createCanvasOnce, drawDragger } from '../canvas.js';
 import { setPanel, attachDropdownMenu } from '../ui.js';
 
@@ -65,6 +65,9 @@ export const sectorSegmentModule = {
     },
     getFacts() { return this.modes[this.viewMode]?.facts; },
 
+    // which labState slice belongs to the current mode
+    stateKey() { return this.viewMode === 'Circular Sector' ? 'sector' : 'segment'; },
+
     init() {
         createCanvasOnce();
         this.renderUI();
@@ -114,11 +117,12 @@ export const sectorSegmentModule = {
     const radius = document.getElementById("radiusInput");
     const angle = document.getElementById("angleInput");
     if (!radius || !angle) return;
+    const key = this.stateKey();
     const update = () => {
-        labState.sector.radius = Number(radius.value);
-        labState.sector.angleDeg = Math.max(5, Math.min(360, Number(angle.value)));
-        radius.value = labState.sector.radius;
-        angle.value = labState.sector.angleDeg;
+        labState[key].radius = Number(radius.value);
+        labState[key].angleDeg = Math.max(5, Math.min(360, Number(angle.value)));
+        radius.value = labState[key].radius;
+        angle.value = labState[key].angleDeg;
         this.updateStats();
         draw();
     };
@@ -127,22 +131,31 @@ export const sectorSegmentModule = {
    },
 
    updateStats() {
-    if (this.viewMode !== "Circular Sector") return;
-    const area = document.getElementById("sectorAreaVal");
-    const perimeter = document.getElementById("sectorPerimeterVal");
-    if (!area || !perimeter) return;
-    const r = labState.sector.radius;
-    const deg = labState.sector.angleDeg;
-    area.textContent = sectorArea(r, deg).toFixed(1);
-    perimeter.textContent = sectorPerimeter(r, deg).toFixed(1); 
+    const key = this.stateKey();
+    const r = labState[key].radius;
+    const deg = labState[key].angleDeg;
+    if (this.viewMode === "Circular Sector") {
+        const area = document.getElementById("sectorAreaVal");
+        const perimeter = document.getElementById("sectorPerimeterVal");
+        if (!area || !perimeter) return;
+        area.textContent = sectorArea(r, deg).toFixed(1);
+        perimeter.textContent = sectorPerimeter(r, deg).toFixed(1);
+    } else {
+        const area = document.getElementById("sectorAreaVal");
+        if (!area) return;
+        area.textContent = segmentArea(r, deg).toFixed(1);
+    }
    },
 
     draw(ctx) {
     const cx = canvas.width / 2;
     const cy = canvas.height / 2;
     const drawRadius = 110;
-    const deg = labState.sector.angleDeg;
-    const end = toRad(deg);
+    const key = this.stateKey();
+    const deg = labState[key].angleDeg;
+    // normalize so the arc always sweeps forward from `start`, never the reflex way
+    const end = normalize(toRad(deg));
+    const start = 0;
 
     // Common Main Circle
     ctx.beginPath();
@@ -151,10 +164,10 @@ export const sectorSegmentModule = {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    if(this.viewMode === 'Circular Sector') {
+    if (this.viewMode === 'Circular Sector') {
         ctx.beginPath();
         ctx.moveTo(cx, cy);
-        ctx.arc(cx, cy, drawRadius, 0, end);
+        ctx.arc(cx, cy, drawRadius, start, end);
         ctx.closePath();
         ctx.fillStyle = "#f39c12";
         ctx.globalAlpha = 0.4;
@@ -165,14 +178,10 @@ export const sectorSegmentModule = {
         ctx.stroke();
         const p = pointOnCircle(cx, cy, drawRadius, end); drawDragger(p);
     } else {
-    const start = 0;
-
     const A = pointOnCircle(cx, cy, drawRadius, start);
     const B = pointOnCircle(cx, cy, drawRadius, end);
 
-    // ==========================
     // Shaded Circular Segment
-    // ==========================
     ctx.beginPath();
     ctx.moveTo(A.x, A.y);
     ctx.arc(cx, cy, drawRadius, start, end);
@@ -183,9 +192,7 @@ export const sectorSegmentModule = {
     ctx.fill();
     ctx.globalAlpha = 1;
 
-    // ==========================
     // Dashed Radii
-    // ==========================
     ctx.save();
 
     ctx.setLineDash([6, 6]);
@@ -204,9 +211,7 @@ export const sectorSegmentModule = {
 
     ctx.restore();
 
-    // ==========================
     // Draggable Point
-    // ==========================
     drawDragger(B);
 }
     this.updateStats();
