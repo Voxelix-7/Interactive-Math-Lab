@@ -1,5 +1,5 @@
 import { labState, canvas, TAU } from '../state.js';
-import { pointOnCircle, toRad, sectorArea, sectorPerimeter } from '../math.js';
+import { pointOnCircle, toRad, sectorArea, sectorPerimeter, segmentArea } from '../math.js';
 import { draw, createCanvasOnce, drawDragger } from '../canvas.js';
 import { setPanel, attachDropdownMenu } from '../ui.js';
 
