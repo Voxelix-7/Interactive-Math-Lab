@@ -165,8 +165,50 @@ export const sectorSegmentModule = {
         ctx.stroke();
         const p = pointOnCircle(cx, cy, drawRadius, end); drawDragger(p);
     } else {
+    const start = 0;
 
-    }
+    const A = pointOnCircle(cx, cy, drawRadius, start);
+    const B = pointOnCircle(cx, cy, drawRadius, end);
+
+    // ==========================
+    // Shaded Circular Segment
+    // ==========================
+    ctx.beginPath();
+    ctx.moveTo(A.x, A.y);
+    ctx.arc(cx, cy, drawRadius, start, end);
+    ctx.closePath();
+
+    ctx.fillStyle = "#f39c12";
+    ctx.globalAlpha = 0.4;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+
+    // ==========================
+    // Dashed Radii
+    // ==========================
+    ctx.save();
+
+    ctx.setLineDash([6, 6]);
+    ctx.strokeStyle = "#f39c12";
+    ctx.lineWidth = 2;
+
+    ctx.beginPath();
+
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(A.x, A.y);
+
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(B.x, B.y);
+
+    ctx.stroke();
+
+    ctx.restore();
+
+    // ==========================
+    // Draggable Point
+    // ==========================
+    drawDragger(B);
+}
     this.updateStats();
     }
 };
