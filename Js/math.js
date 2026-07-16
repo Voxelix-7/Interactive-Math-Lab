@@ -53,3 +53,9 @@ export function sectorPerimeter(r, deg) {
     const arc = r * toRad(deg);
     return 2 * r + arc;
 }
+
+export function segmentArea(r, deg) {
+    let rad = toRad(deg);
+    let bracket = rad - Math.sin(rad);
+    return 0.5 * r * r * bracket;
+}

@@ -21,7 +21,21 @@ export const sectorViews = {
                 <span style="color: #3498db; font-weight: bold;">Perimeter = <span id="sectorPerimeterVal"></span></span>
             </div>
     `,
-    segment: `<p>hi</p>`
+    segment: `
+        <div class="inputs">
+            <div class="input-group">
+                <label>Radius</label>
+                <input type="number" id="radiusInput" value="${labState.segment.radius}">
+            </div>
+            <div class="input-group">
+                <label>Angle (degrees)</label>
+                <input type="number" id="angleInput" value="${labState.segment.angleDeg}">
+            </div>
+        </div>
+        <div class="result-panel">
+                <span style="color: #e74c3c; font-weight: bold;">Area = <span id="sectorAreaVal"></span></span>
+            </div>
+    `
 };
 
 export const sectorSegmentModule = {
