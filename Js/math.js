@@ -1,5 +1,4 @@
 // math.js — Pure math helper functions
-
 import { TAU, labState } from './state.js';
 // Transforms a confusing negative angle into its positive twin
 export function normalize(a) { return (a % TAU + TAU) % TAU; }
