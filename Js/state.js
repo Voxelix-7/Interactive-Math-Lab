@@ -1,5 +1,4 @@
 // state.js — All shared variables, constants, and app state
-
 export let canvas = null;
 export let ctx = null;
 export let currentModule = null;
@@ -61,7 +60,7 @@ export let labState = {
     },
 
     segment: {
-      radius: 10,
+      radius: 5,
       angleDeg: 90
     }
   
