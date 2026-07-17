@@ -39,23 +39,26 @@ export function generateRandomGoal(mode) {
 }
 
 // segmentSectorModule
+function roundToTwo(num) {
+    return Math.round(num * 100) / 100;
+}
 // To be used to find length of arc
 export function toRad(deg) {
-    let rad =  deg * (Math.PI / 180);
-    return Math.round(rad * 1000) / 1000; //approximates to the nearest thousands
+    return deg * (Math.PI / 180);
 }
 // Using degrees law
 export function sectorArea(r, deg) {
-    return Math.PI * r * r * deg / 360;
+    let result = Math.PI * r * r * deg / 360;
+    return roundToTwo(result);
 }
 
 export function sectorPerimeter(r, deg) {
     const arc = r * toRad(deg);
-    return 2 * r + arc;
+    return roundToTwo(2 * r + arc);
 }
 
 export function segmentArea(r, deg) {
     let rad = toRad(deg);
     let bracket = rad - Math.sin(rad);
-    return 0.5 * r * r * bracket;
+    return roundToTwo(0.5 * r * r * bracket);
 }
