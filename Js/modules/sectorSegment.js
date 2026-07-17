@@ -117,17 +117,21 @@ export const sectorSegmentModule = {
     const radius = document.getElementById("radiusInput");
     const angle = document.getElementById("angleInput");
     if (!radius || !angle) return;
+
     const key = this.stateKey();
-    const update = () => {
-        labState[key].radius = Number(radius.value);
+    const update = () => {        
+        if (radius.value === "" || angle.value === "") return; // Skip if input bars are empty
+        labState[key].radius = Math.max(1, Math.min(100, Number(radius.value)));
         labState[key].angleDeg = Math.max(5, Math.min(360, Number(angle.value)));
         radius.value = labState[key].radius;
         angle.value = labState[key].angleDeg;
         this.updateStats();
         draw();
     };
+
     radius.addEventListener("input", update);
     angle.addEventListener("input", update);
+
    },
 
    updateStats() {
