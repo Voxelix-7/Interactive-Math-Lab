@@ -67,7 +67,7 @@ window.onload = function() {
     polygonBtn: polygonModule,
     circlePropsBtn: circleModule,
     sectorSegmentBtn: sectorSegmentModule,
-    UnitCircleBtn: unitCircleModule
+    unitCircleBtn: unitCircleModule
     };
     Object.entries(labs).forEach(([btnId, module]) => {
     setupLab(btnId, () => {
