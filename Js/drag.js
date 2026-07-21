@@ -45,6 +45,15 @@ export function startDrag(e) {
         const angle = toRad(labState[key].angleDeg);
         const p = { x: cx + drawRadius * Math.cos(angle), y: cy + drawRadius * Math.sin(angle) };
         if (Math.hypot(x - p.x, y - p.y) < 25) { setDragging("sectorPoint"); } 
+    } else if (currentModule === unitCircleModule) {
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+    const r = labState.unitCircle.radius;
+    const a = labState.unitCircle.angle;
+    const px = cx + r * Math.cos(a);
+    const py = cy - r * Math.sin(a);
+    if (Math.hypot(x - px, y - py) < 25)
+        setDragging("unitPoint");
     }
 }
 
@@ -78,6 +87,11 @@ export function drag(e) {
        const input = document.getElementById("angleInput");
        if (input) input.value = labState[key].angleDeg;
        sectorSegmentModule.updateStats(); 
+    } else if (currentModule === unitCircleModule && dragging === "unitPoint") {
+        const cx = canvas.width / 2;
+        const cy = canvas.height / 2;
+        labState.unitCircle.angle =
+        Math.atan2(cy - y, x - cx);
     }
 
     draw();
