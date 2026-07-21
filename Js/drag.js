@@ -10,6 +10,7 @@ let pythagorasModule, subtendedAnglesModule, sectorSegmentModule;
 import('./modules/pythagoras.js').then(m => { pythagorasModule = m.pythagorasModule; });
 import('./modules/subtendedAngles.js').then(m => { subtendedAnglesModule = m.subtendedAnglesModule; });
 import('./modules/sectorSegment.js').then(m => { sectorSegmentModule = m.sectorSegmentModule; });
+import('./modules/unitCircle.js').then(m => { unitCircleModule = m.unitCircleModule; });
 
 export function getPos(e) {
     const rect = canvas.getBoundingClientRect();
