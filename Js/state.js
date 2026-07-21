@@ -62,8 +62,13 @@ export let labState = {
     segment: {
       radius: 5,
       angleDeg: 90
+    },
+
+    unitCircle: {
+      radius: 110,
+      angle: Math.PI / 4
     }
-  
+
 };
 
 // Other files import these to UPDATE the variables above,
