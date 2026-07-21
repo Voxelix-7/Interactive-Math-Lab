@@ -6,6 +6,7 @@ import { congruenceModule } from './modules/congruence.js';
 import { polygonModule } from './modules/polygons.js';
 import { circleModule } from './modules/circles.js';
 import { subtendedAnglesModule } from './modules/subtendedAngles.js';
+import { unitCircleModule } from './modules/unitCircle.js';
 import { sectorSegmentModule } from './modules/sectorSegment.js';
 import { setCurrentModule } from './state.js';
 
