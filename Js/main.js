@@ -18,7 +18,8 @@ window.onload = function() {
     const labInterface = document.getElementById("lab-interface");
     const menus = [
     { btn: document.getElementById("geometryBtn"), element: document.getElementById("geoDropdown") },
-    { btn: document.getElementById("circlesBtn"), element: document.getElementById("circlesDropdown") }
+    { btn: document.getElementById("circlesBtn"), element: document.getElementById("circlesDropdown") },
+    { btn: document.getElementById("trigBtn"), element: document.getElementById("trigDropdown") }
     ];
     const closeAllMenus = () => {menus.forEach(menu => menu.element?.classList.remove("show-menu"));};
 

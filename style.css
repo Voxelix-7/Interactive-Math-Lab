@@ -163,7 +163,7 @@ text-align:left;
   font-style: italic;
 }
 
-.geomenu, .Cmenu {
+.menu {
   display: none;
   top:100%;
   width:100%;
@@ -175,7 +175,7 @@ text-align:left;
 }
 
 /* to show menu */
-.geomenu-item, .C-item {
+.menu-item {
   color: black;
   text-align: left;
   padding: 15px;
@@ -185,11 +185,11 @@ text-align:left;
   cursor: pointer;
 }
 
-.geomenu-item:last-child, .C-item:last-child {
+.menu-item:last-child {
   border-bottom: none;
 }
 
-.geomenu-item:hover, .C-item:hover {
+.menu-item:hover {
   background-color: var(--bg-warm);
   color: var(--primary-warm);
 }
