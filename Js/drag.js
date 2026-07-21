@@ -6,7 +6,7 @@ import { draw } from './canvas.js';
 
 // These are imported lazily to avoid circular imports
 // (canvas.js imports drag.js, so drag.js must not import canvas.js at the top level)
-let pythagorasModule, subtendedAnglesModule, sectorSegmentModule;
+let pythagorasModule, subtendedAnglesModule, sectorSegmentModule, unitCircleModule;
 import('./modules/pythagoras.js').then(m => { pythagorasModule = m.pythagorasModule; });
 import('./modules/subtendedAngles.js').then(m => { subtendedAnglesModule = m.subtendedAnglesModule; });
 import('./modules/sectorSegment.js').then(m => { sectorSegmentModule = m.sectorSegmentModule; });
@@ -44,16 +44,14 @@ export function startDrag(e) {
         const key = sectorSegmentModule.stateKey();
         const angle = toRad(labState[key].angleDeg);
         const p = { x: cx + drawRadius * Math.cos(angle), y: cy + drawRadius * Math.sin(angle) };
-        if (Math.hypot(x - p.x, y - p.y) < 25) { setDragging("sectorPoint"); } 
+        if (Math.hypot(x - p.x, y - p.y) < 25) { setDragging("sectorPoint"); }
+
     } else if (currentModule === unitCircleModule) {
-    const cx = canvas.width / 2;
-    const cy = canvas.height / 2;
-    const r = labState.unitCircle.radius;
-    const a = labState.unitCircle.angle;
-    const px = cx + r * Math.cos(a);
-    const py = cy - r * Math.sin(a);
-    if (Math.hypot(x - px, y - py) < 25)
-        setDragging("unitPoint");
+        const cx = canvas.width / 2, cy = canvas.height / 2;
+        const r = labState.unitCircle.radius;
+        const theta = labState.unitCircle.angle;
+        const p = { x: cx + r * Math.cos(theta), y: cy - r * Math.sin(theta) };
+        if (Math.hypot(x - p.x, y - p.y) < 25) { setDragging("unitCirclePoint"); }
     }
 }
 
@@ -76,7 +74,7 @@ export function drag(e) {
 
         // Import updateInputsFromTriangle from pythagoras module
         import('./modules/pythagoras.js').then(({ updateInputsFromTriangle }) => { updateInputsFromTriangle(); });
-        
+
     } else if (currentModule === sectorSegmentModule && dragging === "sectorPoint") {
        const cx = canvas.width / 2;
        const cy = canvas.height / 2;
@@ -86,12 +84,14 @@ export function drag(e) {
        labState[key].angleDeg = Math.round(angle * 180 / Math.PI);
        const input = document.getElementById("angleInput");
        if (input) input.value = labState[key].angleDeg;
-       sectorSegmentModule.updateStats(); 
-    } else if (currentModule === unitCircleModule && dragging === "unitPoint") {
-        const cx = canvas.width / 2;
-        const cy = canvas.height / 2;
-        labState.unitCircle.angle =
-        Math.atan2(cy - y, x - cx);
+       sectorSegmentModule.updateStats();
+
+    } else if (currentModule === unitCircleModule && dragging === "unitCirclePoint") {
+        const cx = canvas.width / 2, cy = canvas.height / 2;
+        // Flip y back to standard math convention (up = positive) before computing the angle
+        let angle = Math.atan2(cy - y, x - cx);
+        if (angle < 0) angle += TAU;
+        labState.unitCircle.angle = angle;
     }
 
     draw();
