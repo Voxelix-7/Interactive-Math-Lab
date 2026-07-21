@@ -350,22 +350,7 @@ input[type="range"]::-webkit-slider-thumb {
   margin-top: 5px;
 }
 
-.menu-item {
-  padding: 10px 15px;
-  cursor: pointer;
-  color: #4e342e;
-  font-size: 0.9em;
-  border-bottom: 1px solid #efebe9;
-}
 
-.menu-item:last-child {
-  border-bottom: none;
-}
-
-.menu-item:hover {
-  background: #fff8e1;
-  color: var(--primary-warm);
-}
 
 .viewData{
   font-size: 0.8em;
