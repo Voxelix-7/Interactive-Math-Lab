@@ -6,11 +6,12 @@ import { draw } from './canvas.js';
 
 // These are imported lazily to avoid circular imports
 // (canvas.js imports drag.js, so drag.js must not import canvas.js at the top level)
-let pythagorasModule, subtendedAnglesModule, sectorSegmentModule, unitCircleModule;
+let pythagorasModule, subtendedAnglesModule, sectorSegmentModule, unitCircleModule, elevDeprModule;
 import('./modules/pythagoras.js').then(m => { pythagorasModule = m.pythagorasModule; });
 import('./modules/subtendedAngles.js').then(m => { subtendedAnglesModule = m.subtendedAnglesModule; });
 import('./modules/sectorSegment.js').then(m => { sectorSegmentModule = m.sectorSegmentModule; });
 import('./modules/unitCircle.js').then(m => { unitCircleModule = m.unitCircleModule; });
+import('./modules/elevationDepression.js').then(m => { elevDeprModule = m.elevDeprModule; });
 
 export function getPos(e) {
     const rect = canvas.getBoundingClientRect();
