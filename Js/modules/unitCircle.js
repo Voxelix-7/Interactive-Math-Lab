@@ -32,9 +32,11 @@ export const unitCircleModule = {
                     <div style="text-align:center;">
                     Angle (θ): <b style="color:#f39c12; text-align: center;"><span id="valDeg">0</span>° / <span id="valRad">0</span> rad</b><br>
                     </div>
-                        sin(θ): <b style="color:#e74c3c;"><span id="valSin">0</span></b><br>
-                        cos(θ): <b style="color:#3498db;"><span id="valCos">0</span></b><br>
-                        tan(θ): <b style="color:#4caf50;"><span id="valTan">0</span></b>
+                    <div style="margin-top:8px; padding-top:8px; border-top:1px dashed #bcaaa4;">
+                            sin(θ): <b style="color:#e74c3c;"><span id="valSin">0</span></b><br>
+                            cos(θ): <b style="color:#3498db;"><span id="valCos">0</span></b><br>
+                            tan(θ): <b style="color:#4caf50;"><span id="valTan">0</span></b>
+                        </div>                        
                     </div>
                 </div>
                 <p class="lab-note">The point's coordinates are (cos θ, sin θ). Drag it around the circle.</p>
