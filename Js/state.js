@@ -67,8 +67,19 @@ export let labState = {
     unitCircle: {
       radius: 110,
       angle: Math.PI / 4
+    },
+  
+   elevDepr: {
+    showConstruction: true,
+    elevation: {
+      personX: 150,
+      buildingTopY: 150
+    },
+    depression: {
+      towerTopY: 150,
+      boatX: 380
     }
-
+  }
 };
 
 // Other files import these to UPDATE the variables above,
