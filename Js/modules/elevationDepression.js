@@ -36,9 +36,10 @@ export const elevDeprViews = {
                 </div>
             </div>
         </div>
-        <label style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:14px; font-size:0.85em; color:#4e342e; cursor:pointer;">
-            <input type="checkbox" id="edConstructionCheck" ${labState.elevDepr.showConstruction ? 'checked' : ''}> Show Construction Lines
-        </label>
+        <div style="margin-bottom:20px; display:flex; align-items:center; justify-content: center; gap:10px; border-top: 1px solid #eee; padding-top:10px;">
+        <input type="checkbox" id="edConstructionCheck" ${labState.elevDepr.showConstruction ? 'checked' : ''} style="width: 18px; height: 18px; accent-color:#f39c12; cursor: pointer;">
+        <label style="font-size:0.85em; cursor: pointer; color: #6d4c41;" for="edConstructionCheck">Show Construction Lines</label>
+        </div>
         <p class="lab-note">The angle of elevation is measured upward from the horizontal.</p>`,
     depression: () => `
         <p class="viewData">Drag the observer or the boat to change the view.</p>
@@ -54,9 +55,10 @@ export const elevDeprViews = {
                 </div>
             </div>
         </div>
-        <label style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:14px; font-size:0.85em; color:#4e342e; cursor:pointer;">
-            <input type="checkbox" id="edConstructionCheck" ${labState.elevDepr.showConstruction ? 'checked' : ''}> Show Construction Lines
-        </label>
+        <div style="margin-bottom:20px; display:flex; align-items:center; justify-content: center; gap:10px; border-top: 1px solid #eee; padding-top:10px;">
+        <input type="checkbox" id="edConstructionCheck" ${labState.elevDepr.showConstruction ? 'checked' : ''} style="width: 18px; height: 18px; accent-color:#f39c12; cursor: pointer;">
+        <label style="font-size:0.85em; cursor: pointer; color: #6d4c41;" for="edConstructionCheck">Show Construction Lines</label>
+        </div>
         <p class="lab-note">The angle of depression is measured downward from the horizontal.</p>`
 };
 
