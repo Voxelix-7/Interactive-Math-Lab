@@ -8,6 +8,7 @@ import { circleModule } from './modules/circles.js';
 import { subtendedAnglesModule } from './modules/subtendedAngles.js';
 import { unitCircleModule } from './modules/unitCircle.js';
 import { sectorSegmentModule } from './modules/sectorSegment.js';
+import { elevDeprModule } from './modules/elevationDepression.js';
 import { setCurrentModule } from './state.js';
 
 // App Initialization 
@@ -68,7 +69,8 @@ window.onload = function() {
     polygonBtn: polygonModule,
     circlePropsBtn: circleModule,
     sectorSegmentBtn: sectorSegmentModule,
-    unitCircleBtn: unitCircleModule
+    unitCircleBtn: unitCircleModule,
+    elevationDepressionBtn: elevDeprModule
     };
     Object.entries(labs).forEach(([btnId, module]) => {
     setupLab(btnId, () => {
