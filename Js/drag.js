@@ -53,6 +53,17 @@ export function startDrag(e) {
         const theta = labState.unitCircle.angle;
         const p = { x: cx + r * Math.cos(theta), y: cy - r * Math.sin(theta) };
         if (Math.hypot(x - p.x, y - p.y) < 25) { setDragging("unitCirclePoint"); }
+    } else if (currentModule === elevDeprModule) {
+        const groundY = 340, eyeY = groundY - 30, buildingX = 440, towerX = 110;
+        if (elevDeprModule.viewMode === 'Angle of Elevation') {
+            const { personX, buildingTopY } = labState.elevDepr.elevation;
+            if (Math.hypot(x - personX, y - eyeY) < 25) setDragging("edPerson");
+            else if (Math.hypot(x - buildingX, y - buildingTopY) < 25) setDragging("edBuildingTop");
+        } else {
+            const { towerTopY, boatX } = labState.elevDepr.depression;
+            if (Math.hypot(x - towerX, y - towerTopY) < 25) setDragging("edObserver");
+            else if (Math.hypot(x - boatX, y - groundY) < 25) setDragging("edBoat");
+        }
     }
 }
 
@@ -93,6 +104,19 @@ export function drag(e) {
         let angle = Math.atan2(cy - y, x - cx);
         if (angle < 0) angle += TAU;
         labState.unitCircle.angle = angle;
+    } else if (currentModule === elevDeprModule && dragging.startsWith("ed")) {
+        const groundY = 340, eyeY = groundY - 30;
+        const e = labState.elevDepr.elevation, d = labState.elevDepr.depression;
+        if (dragging === "edPerson") {
+            e.personX = Math.max(60, Math.min(360, x));
+        } else if (dragging === "edBuildingTop") {
+            e.buildingTopY = Math.max(70, Math.min(eyeY - 20, y));
+        } else if (dragging === "edObserver") {
+            d.towerTopY = Math.max(70, Math.min(groundY - 60, y));
+        } else if (dragging === "edBoat") {
+            d.boatX = Math.max(190, Math.min(500, x));
+        }
+        elevDeprModule.updateStats();
     }
 
     draw();
