@@ -8,8 +8,8 @@ export const unitCircleModule = {
     facts: [
         "The word 'sine' comes from a mistranslation: an Arabic word for 'bowstring' or 'chord' was translated into Latin as 'sinus', meaning bay or fold",
         "The unit circle has a radius of exactly 1, which makes the coordinates of any point on it simply (cos θ, sin θ)",
-        "Tangent gets its name from the tangent line to a circle, since tan(θ) can be represented as a line segment tangent to the unit circle",
-        "Ancient Greek astronomers built the first trig tables not for triangles, but to track the motion of stars and planets",
+        "tan(θ) can be represented as a line segment tangent to the unit circle",
+        "Ancient Greek astronomers built the first trig tables to track the motion of stars and planets and not for triangles",
         "tan(θ) becomes undefined at 90° and 270°, exactly where cos(θ) = 0, since tangent is sine divided by cosine"
     ],
     getFacts() { return this.facts; },
@@ -29,7 +29,7 @@ export const unitCircleModule = {
                 <p class="viewData">Drag the point around the circle to explore sine, cosine, and tangent.</p>
                 <div class="data-container">
                     <div style="font-size:0.95em; line-height:1.9;">
-                        Angle (θ): <b style="color:#f39c12;"><span id="valDeg">0</span>° / <span id="valRad">0</span> rad</b><br>
+                        Angle (θ): <b style="color:#f39c12; text-align: center"><span id="valDeg">0</span>° / <span id="valRad">0</span> rad</b><br>
                         sin(θ): <b style="color:#e74c3c;"><span id="valSin">0</span></b><br>
                         cos(θ): <b style="color:#3498db;"><span id="valCos">0</span></b><br>
                         tan(θ): <b style="color:#4caf50;"><span id="valTan">0</span></b>
