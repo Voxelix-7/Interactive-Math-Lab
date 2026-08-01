@@ -17,12 +17,19 @@ window.onload = function() {
     const startBtn = document.getElementById("startBtn");
     const welcomeScreen = document.querySelector(".welcome-screen");
     const labInterface = document.getElementById("lab-interface");
-    const menus = [
-    { btn: document.getElementById("geometryBtn"), element: document.getElementById("geoDropdown") },
-    { btn: document.getElementById("circlesBtn"), element: document.getElementById("circlesDropdown") },
-    { btn: document.getElementById("visualizeBtn"), element: document.getElementById("visualizeDropdown") }
-    ];
-    const closeAllMenus = () => {menus.forEach(menu => menu.element?.classList.remove("show-menu"));};
+
+    // Generic category-menu wiring: every top-level ".category" that contains
+    // a ".category-menu" gets toggle/close behavior automatically. This means
+    // adding a brand new category in index.html (like Trigonometry or
+    // Visualize) never requires touching this file again — the previous bug
+    // was caused by hardcoding each category button/dropdown pair by hand,
+    // so any category left out of that list silently never opened.
+    const categoryEls = Array.from(document.querySelectorAll(".category"));
+    const menus = categoryEls
+        .map(btn => ({ btn, element: btn.querySelector(".category-menu") }))
+        .filter(({ element }) => element);
+
+    const closeAllMenus = () => { menus.forEach(menu => menu.element?.classList.remove("show-menu")); };
 
     if (startBtn) {
         startBtn.addEventListener('click', () => {
@@ -31,54 +38,54 @@ window.onload = function() {
             setTimeout(() => labInterface.classList.add("fade"), 10);
         });
     }
-  
+
     menus.forEach(({ btn, element }) => {
-    if (btn && element) {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            element.classList.toggle("show-menu");
-            menus.forEach(other => {
-                if (other.element !== element) other.element?.classList.remove("show-menu");
-            });
+            const isOpen = element.classList.contains("show-menu");
+            menus.forEach(other => other.element?.classList.remove("show-menu"));
+            if (!isOpen) element.classList.add("show-menu");
         });
-    }
     });
 
     document.addEventListener('click', (e) => {
-    menus.forEach(({ btn, element }) => {
-        if (element && !btn.contains(e.target)) element.classList.remove("show-menu");
-    });
+        menus.forEach(({ btn, element }) => {
+            if (element && !btn.contains(e.target)) element.classList.remove("show-menu");
+        });
     });
 
     const setupLab = (id, callback) => {
-    const btn = document.getElementById(id);
-    if (btn) {
-        btn.addEventListener('click', () => {
-            callback();
-            closeAllMenus();
-        });
-    }
+        const btn = document.getElementById(id);
+        if (btn) {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                callback();
+                closeAllMenus();
+            });
+        }
     };
 
     // Labs Assignment 
     const labs = {
-    pythagorasBtn: pythagorasModule,
-    congruenceBtn: congruenceModule,
-    subtendedAnglesBtn: subtendedAnglesModule,
-    polygonBtn: polygonModule,
-    circlePropsBtn: circleModule,
-    sectorSegmentBtn: sectorSegmentModule,
-    vectorExplorerBtn: vectorExplorerModule,
-    boatModeBtn: boatModeModule
+        pythagorasBtn: pythagorasModule,
+        congruenceBtn: congruenceModule,
+        subtendedAnglesBtn: subtendedAnglesModule,
+        polygonBtn: polygonModule,
+        circlePropsBtn: circleModule,
+        sectorSegmentBtn: sectorSegmentModule,
+        vectorExplorerBtn: vectorExplorerModule,
+        boatModeBtn: boatModeModule
+        // unitCircleBtn / elevationDepressionBtn: wire in here once their
+        // Trigonometry modules exist, following the same pattern.
     };
     Object.entries(labs).forEach(([btnId, module]) => {
-    setupLab(btnId, () => {
-        if (module && typeof module.init === 'function') {
-            resetLab();
-            setCurrentModule(module);
-            module.init();
-            draw();
-        }
+        setupLab(btnId, () => {
+            if (module && typeof module.init === 'function') {
+                resetLab();
+                setCurrentModule(module);
+                module.init();
+                draw();
+            }
+        });
     });
-});
 };
