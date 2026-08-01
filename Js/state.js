@@ -64,6 +64,23 @@ export let labState = {
       angleDeg: 90
     },
 
+  unitCircle: {
+      radius: 110,
+      angle: Math.PI / 4
+    },
+  
+   elevDepr: {
+    showConstruction: true,
+    elevation: {
+      personX: 150,
+      buildingTopY: 150
+    },
+    depression: {
+      towerTopY: 150,
+      boatX: 380
+    }
+  },
+     
   vectors: {
     mode: 'free', // 'free' | 'headToTail'
     A: { x: 3, y: 2 },
