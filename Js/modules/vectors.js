@@ -6,11 +6,32 @@ import { setPanel } from '../ui.js';
 
 export const UNIT = 30; // px per grid unit — also used by drag.js
 
+// Colors cycled through for each new random "extra" vector, kept visually
+// distinct from the fixed red (A) / blue (B) / green (Resultant) trio.
+const EXTRA_COLORS = ['#9b59b6', '#16a085', '#e91e63', '#795548', '#607d8b', '#8e44ad', '#00838f', '#c0392b'];
+
 export function toCanvas(cx, cy, v) {
     return { x: cx + v.x * UNIT, y: cy - v.y * UNIT };
 }
 
-function vectorStatsHTML(id, label, color) {
+// Shows whole numbers as-is and only falls back to 2 decimals when a value
+// genuinely isn't a whole number (magnitude/tan are often irrational).
+function fmt(n) {
+    if (!isFinite(n)) return "0";
+    const rounded = Math.round(n);
+    return Math.abs(n - rounded) < 0.005 ? rounded.toString() : n.toFixed(2);
+}
+
+function vectorStatsHTML(id, label, color, editable = false) {
+    const inputsHTML = editable ? `
+        <div style="margin-top:8px; display:flex; gap:10px; justify-content:center; align-items:center;">
+            <label style="font-size:0.8em; color:#4e342e;">X:
+                <input type="number" id="${id}InputX" step="1" style="width:60px; padding:4px; margin-left:4px;">
+            </label>
+            <label style="font-size:0.8em; color:#4e342e;">Y:
+                <input type="number" id="${id}InputY" step="1" style="width:60px; padding:4px; margin-left:4px;">
+            </label>
+        </div>` : '';
     return `
         <div style="margin-bottom:10px;">
             <b style="color:${color};">${label}</b><br>
@@ -20,17 +41,25 @@ function vectorStatsHTML(id, label, color) {
             tanθ = y/x: <span id="${id}Tan">0</span><br>
             θ from +X axis: <b><span id="${id}Ang">0</span>°</b>
             </span>
+            ${inputsHTML}
         </div>`;
 }
 
 function fillVectorStats(id, v) {
     const xEl = document.getElementById(id + 'X');
     if (!xEl) return;
-    xEl.innerText = v.x.toFixed(2);
-    document.getElementById(id + 'Y').innerText = v.y.toFixed(2);
-    document.getElementById(id + 'Mag').innerText = vecMagnitude(v).toFixed(2);
-    document.getElementById(id + 'Tan').innerText = v.x !== 0 ? (v.y / v.x).toFixed(2) : "undefined (x=0)";
-    document.getElementById(id + 'Ang').innerText = vecMagnitude(v) > 0.001 ? vecAngleDeg(v).toFixed(1) : "0.0";
+    xEl.innerText = Math.round(v.x);
+    document.getElementById(id + 'Y').innerText = Math.round(v.y);
+    document.getElementById(id + 'Mag').innerText = fmt(vecMagnitude(v));
+    document.getElementById(id + 'Tan').innerText = v.x !== 0 ? fmt(v.y / v.x) : "undefined (x=0)";
+    document.getElementById(id + 'Ang').innerText = vecMagnitude(v) > 0.001 ? Math.round(vecAngleDeg(v)) : 0;
+
+    // Keep editable inputs synced with drags, but never fight the user
+    // while they're actively typing in that same field.
+    const inX = document.getElementById(id + 'InputX');
+    const inY = document.getElementById(id + 'InputY');
+    if (inX && document.activeElement !== inX) inX.value = Math.round(v.x);
+    if (inY && document.activeElement !== inY) inY.value = Math.round(v.y);
 }
 
 function drawDashedComponents(ctx, from, to, color) {
@@ -66,10 +95,11 @@ export const vectorExplorerModule = {
     transitionStart: null,
 
     init() {
-        createCanvasOnce();
+        createCanvasOnce({ responsive: true });
         this.transitionProgress = labState.vectors.mode === 'headToTail' ? 1 : 0;
         this.renderUI();
         this.attachListeners();
+        this.renderExtrasList();
         this.updateStats();
     },
 
@@ -78,22 +108,27 @@ export const vectorExplorerModule = {
         setPanel(`
             <div style="color:#4e342e; padding:15px; text-align:center; font-family: sans-serif;">
                 <h3 class="lab-title">Vector Explorer</h3>
-                <p class="viewData">Click or drag anywhere on the grid to reposition the red (A) or blue (B) vector.</p>
+                <p class="viewData">Click or drag anywhere on the grid to reposition the red (A) or blue (B) vector, or type exact values below.</p>
                 <button id="h2t-toggle" class="refresh-quad-btn" style="background:${isH2T ? '#4e342e' : '#f39c12'};">
                     ${isH2T ? '↩ Switch to Free Vectors' : '➤ Switch to Head-to-Tail Mode'}
                 </button>
-                <div class="data-container" style="margin-top:15px;">
-                    ${vectorStatsHTML('vecA', 'Vector A', '#e74c3c')}
-                    ${vectorStatsHTML('vecB', 'Vector B', '#2980b9')}
-                    ${vectorStatsHTML('vecR', 'Resultant R = A + B', '#2ecc71')}
+                <div style="display:flex; gap:8px; justify-content:center; margin-top:10px;">
+                    <button id="add-vector-btn" class="refresh-quad-btn" style="background:#f39c12; margin-top:0;">+ Add Vector</button>
+                    <button id="reset-view-btn" class="refresh-quad-btn" style="background:#795548; margin-top:0;">Reset View</button>
                 </div>
+                <div class="data-container" style="margin-top:15px;">
+                    ${vectorStatsHTML('vecA', 'Vector A', '#e74c3c', true)}
+                    ${vectorStatsHTML('vecB', 'Vector B', '#2980b9', true)}
+                    ${vectorStatsHTML('vecR', 'Resultant R = A + B', '#2ecc71', false)}
+                </div>
+                <div id="extraVectorsList"></div>
             </div>
         `);
     },
 
     attachListeners() {
-        const btn = document.getElementById('h2t-toggle');
-        if (btn) btn.onclick = () => {
+        const h2tBtn = document.getElementById('h2t-toggle');
+        if (h2tBtn) h2tBtn.onclick = () => {
             const newMode = labState.vectors.mode === 'headToTail' ? 'free' : 'headToTail';
             this.transitionFrom = this.transitionProgress;
             this.transitionTo = newMode === 'headToTail' ? 1 : 0;
@@ -101,8 +136,77 @@ export const vectorExplorerModule = {
             labState.vectors.mode = newMode;
             this.renderUI();
             this.attachListeners();
+            this.renderExtrasList();
             this.animateTransition();
         };
+
+        const addBtn = document.getElementById('add-vector-btn');
+        if (addBtn) addBtn.onclick = () => {
+            this.addRandomVector();
+            this.renderExtrasList();
+            draw();
+        };
+
+        const resetBtn = document.getElementById('reset-view-btn');
+        if (resetBtn) resetBtn.onclick = () => {
+            labState.vectors.extras = [];
+            this.renderExtrasList();
+            draw();
+        };
+
+        // Editable X/Y inputs for the two main vectors. B is always stored
+        // as its own intrinsic (dx, dy), even in head-to-tail mode, so
+        // editing A never has to touch B and vice versa.
+        [['vecA', 'A'], ['vecB', 'B']].forEach(([id, key]) => {
+            const inX = document.getElementById(id + 'InputX');
+            const inY = document.getElementById(id + 'InputY');
+            if (inX) inX.addEventListener('change', () => {
+                const val = Math.round(parseFloat(inX.value));
+                labState.vectors[key].x = isNaN(val) ? 0 : val;
+                draw();
+            });
+            if (inY) inY.addEventListener('change', () => {
+                const val = Math.round(parseFloat(inY.value));
+                labState.vectors[key].y = isNaN(val) ? 0 : val;
+                draw();
+            });
+        });
+    },
+
+    // Random integer vector, clamped so its tip always lands within the
+    // currently visible plane (which grows/shrinks with the responsive canvas).
+    addRandomVector() {
+        const maxX = Math.max(1, Math.floor((canvas.width / 2) / UNIT) - 1);
+        const maxY = Math.max(1, Math.floor((canvas.height / 2) / UNIT) - 1);
+        let x, y;
+        do {
+            x = Math.floor(Math.random() * (2 * maxX + 1)) - maxX;
+            y = Math.floor(Math.random() * (2 * maxY + 1)) - maxY;
+        } while (x === 0 && y === 0);
+        const color = EXTRA_COLORS[labState.vectors.extras.length % EXTRA_COLORS.length];
+        labState.vectors.extras.push({ x, y, color });
+    },
+
+    renderExtrasList() {
+        const container = document.getElementById('extraVectorsList');
+        if (!container) return;
+        const extras = labState.vectors.extras;
+        if (extras.length === 0) {
+            container.innerHTML = `<p class="lab-note" style="margin-top:12px;">No custom vectors yet — click "+ Add Vector" to drop a random one on the plane.</p>`;
+            return;
+        }
+        container.innerHTML = `
+            <div style="margin-top:15px; text-align:left;" class="data-container">
+                <b style="font-size:0.85em; color:#4e342e;">Custom Vectors</b>
+                <ul style="list-style:none; padding:0; margin:8px 0 0; font-size:0.85em;">
+                    ${extras.map((v, i) => `
+                        <li style="display:flex; align-items:center; gap:8px; padding:4px 0; border-bottom:1px solid #efebe9;">
+                            <span style="width:10px; height:10px; border-radius:50%; background:${v.color}; display:inline-block;"></span>
+                            <span>V${i + 1}: (${v.x}, ${v.y}) — |v| = ${fmt(vecMagnitude(v))}</span>
+                        </li>
+                    `).join('')}
+                </ul>
+            </div>`;
     },
 
     animateTransition() {
@@ -129,13 +233,24 @@ export const vectorExplorerModule = {
         drawGrid(cx, cy, canvas.width, canvas.height, UNIT);
 
         const { A, B } = labState.vectors;
+        const pOrigin = toCanvas(cx, cy, { x: 0, y: 0 });
+
+        // Independent random extras, drawn first so the main A/B/R trio
+        // always renders on top and stays visually primary.
+        labState.vectors.extras.forEach((v, i) => {
+            const pHead = toCanvas(cx, cy, v);
+            drawArrow(pOrigin, pHead, v.color, 2.5);
+            ctx.fillStyle = v.color;
+            ctx.font = "bold 11px Arial";
+            ctx.fillText(`V${i + 1}`, pHead.x + 8, pHead.y - 8);
+        });
+
         // transitionProgress smoothly slides B's tail between the origin (free)
         // and A's head (head-to-tail) — same math drives both modes
         const tailB = { x: A.x * this.transitionProgress, y: A.y * this.transitionProgress };
         const headB = vecAdd(tailB, B);
         const R = vecAdd(A, B);
 
-        const pOrigin = toCanvas(cx, cy, { x: 0, y: 0 });
         const pAHead  = toCanvas(cx, cy, A);
         const pBTail  = toCanvas(cx, cy, tailB);
         const pBHead  = toCanvas(cx, cy, headB);
@@ -181,7 +296,7 @@ export const boatModeModule = {
     lastResult: null,
 
     init() {
-        createCanvasOnce();
+        createCanvasOnce({ responsive: true });
         labState.boat.current = { ...this.challenges[labState.boat.challengeIndex].current };
         this.lastResult = null;
         this.renderUI();
@@ -242,8 +357,8 @@ export const boatModeModule = {
         return {
             success, landingX,
             message: success
-                ? `You reached the dock! Landed at x = ${landingX.toFixed(2)}`
-                : `Missed the dock — landed at x = ${landingX.toFixed(2)}, needed ≈ ${challenge.target.x}`
+                ? `You reached the dock! Landed at x = ${fmt(landingX)}`
+                : `Missed the dock — landed at x = ${fmt(landingX)}, needed ≈ ${challenge.target.x}`
         };
     },
 
