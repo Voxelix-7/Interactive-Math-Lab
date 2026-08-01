@@ -4,21 +4,52 @@ import { canvas, ctx, currentModule, setCanvas, setCtx } from './state.js';
 import { shortestDiff } from './math.js';
 import { infoBtn, factsBox } from './ui.js';
 
-export function createCanvasOnce() {
+// Tracks the active window "resize" handler so switching labs never stacks
+// up duplicate listeners — only ever at most one responsive canvas at a time.
+let activeResizeHandler = null;
+
+function sizeCanvasToContainer(canvasEl, container) {
+    const rect = container.getBoundingClientRect();
+    const w = Math.max(300, Math.floor(rect.width));
+    const h = Math.max(250, Math.floor(rect.height));
+    canvasEl.width = w;
+    canvasEl.height = h;
+    // Inline size overrides the shared `canvas { max-width:100%; height:auto }`
+    // rule so the drawing buffer actually fills the container instead of
+    // being constrained to its intrinsic aspect ratio.
+    canvasEl.style.width = w + "px";
+    canvasEl.style.height = h + "px";
+}
+
+export function createCanvasOnce(opts = {}) {
     const container = document.getElementById("canvas-container");
     if (!container || document.getElementById("myCanvas")) return;
 
-    const newCanvas = Object.assign(document.createElement('canvas'), {
-        id: "myCanvas",
-        width: 550,
-        height: 400
-    });
-
+    const newCanvas = Object.assign(document.createElement('canvas'), { id: "myCanvas" });
     container.appendChild(newCanvas);
     setCanvas(newCanvas);
     setCtx(newCanvas.getContext("2d"));
     if (infoBtn && factsBox) { infoBtn.style.display = 'flex'; }
-  
+
+    if (activeResizeHandler) {
+        window.removeEventListener('resize', activeResizeHandler);
+        activeResizeHandler = null;
+    }
+
+    if (opts.responsive) {
+        // Fill whatever white space the canvas-area container has (used by
+        // the Vector Explorer / Boat & River labs only).
+        sizeCanvasToContainer(newCanvas, container);
+        activeResizeHandler = () => {
+            sizeCanvasToContainer(newCanvas, container);
+            draw();
+        };
+        window.addEventListener('resize', activeResizeHandler);
+    } else {
+        newCanvas.width = 550;
+        newCanvas.height = 400;
+    }
+
     // Drag handlers, imported to avoid circular dependency
     import('./drag.js').then(({ startDrag, drag, stopDrag }) => {
         const events = [
