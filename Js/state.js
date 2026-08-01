@@ -64,27 +64,11 @@ export let labState = {
       angleDeg: 90
     },
 
-    unitCircle: {
-      radius: 110,
-      angle: Math.PI / 4
-    },
-  
-   elevDepr: {
-    showConstruction: true,
-    elevation: {
-      personX: 150,
-      buildingTopY: 150
-    },
-    depression: {
-      towerTopY: 150,
-      boatX: 380
-    }
-  },
-
   vectors: {
-    mode: 'free',
+    mode: 'free', // 'free' | 'headToTail'
     A: { x: 3, y: 2 },
-    B: { x: -2, y: 3 }
+    B: { x: -2, y: 3 },
+    extras: [] // randomly added decorative vectors, cleared by "Reset View"
   },
 
   boat: {
@@ -92,6 +76,7 @@ export let labState = {
     current: { x: 1, y: 0 },
     challengeIndex: 0
   }
+
 };
 
 // Other files import these to UPDATE the variables above,
