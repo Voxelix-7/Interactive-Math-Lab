@@ -6,7 +6,6 @@
     <title>MathLab</title>
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
   <div class="welcome-screen fade">
     <div class="welcome-content">
@@ -15,7 +14,6 @@
       <button id="startBtn" class="start-button">Get Started</button>
     </div>
   </div>
-
   <div id="lab-interface" class="hidden">
     <div class="lab-layout">
       
@@ -23,11 +21,11 @@
         <!-- Geometry category -->
         <div class="category" id="geometryBtn">
           Geometry 
-          <div class="geomenu" id="geoDropdown"> 
+          <div class="category-menu" id="geoDropdown"> 
             <div class="menuitems">
-              <div class="geomenu-item" id="pythagorasBtn">Pythagorean Theorem</div>
-            <div class="geomenu-item" id="congruenceBtn">Congruence</div>
-            <div class="geomenu-item" id="polygonBtn">Polygons</div>
+              <div class="category-menu-item" id="pythagorasBtn">Pythagorean Theorem</div>
+            <div class="category-menu-item" id="congruenceBtn">Congruence</div>
+            <div class="category-menu-item" id="polygonBtn">Polygons</div>
             </div>
           </div>
         </div>
@@ -36,31 +34,36 @@
         <!-- Circles category -->
         <div class="category" id="circlesBtn">
           Circles
-          <div class="Cmenu" id="circlesDropdown"> 
+          <div class="category-menu" id="circlesDropdown"> 
             <div class="menuitems">
-              <div class="C-item" id="circlePropsBtn">Properties</div>
-              <div class="C-item" id="subtendedAnglesBtn">Subtended Angles</div>
-              <div class="C-item" id="sectorSegmentBtn">Sectors & Segments</div>
+              <div class="category-menu-item" id="circlePropsBtn">Properties</div>
+              <div class="category-menu-item" id="subtendedAnglesBtn">Subtended Angles</div>
+              <div class="category-menu-item" id="sectorSegmentBtn">Sectors & Segments</div>
             </div>
           </div>
         </div>
-
         <div class="divider"></div>
-        <div class="category">Trigonometry</div>
+          
+        <div class="category" id="trigBtn">Trigonometry
+          <div class="category-menu" id="trigDropdown">
+            <div class="menuitems">
+            <div class="category-menu-item" id="unitCircleBtn">Unit Circle</div>
+            <div class="category-menu-item" id="elevationDepressionBtn">Angles</div>
+            </div>
+          </div>
+        </div>
         <div class="divider"></div>
 
         <!-- Vectors category -->
-        <div class="category" id="vectorsBtn">
-          Vectors
-          <div class="Cmenu" id="vectorsDropdown">
+        <div class="category" id="visualizeBtn">Visualize
+          <div class="category-menu" id="visualizeDropdown">
             <div class="menuitems">
-              <div class="C-item" id="vectorExplorerBtn">Vector Explorer</div>
-              <div class="C-item" id="boatModeBtn">Boat &amp; River</div>
+            <div class="category-menu-item" id="vectorExplorerBtn">Vector Explorer</div>
+            <div class="category-menu-item" id="boatModeBtn">Boat &amp; River</div>
             </div>
           </div>
         </div>
       </div>
-
       <div class="main-area">
         
         <div class="info-wrapper">
@@ -72,14 +75,11 @@
         
         <div class="canvas-area" id="canvas-container">
         </div>
-
           <div class="data-panel" id="dataPanel">
           <p class="dataP">Laws and theorems will appear here.</p>
           </div>
       </div>
-
     </div>
-
     
     
   </div>
