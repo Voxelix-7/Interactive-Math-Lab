@@ -1,5 +1,5 @@
 // math.js — Pure math helper functions
-import { TAU, labState } from './state.js';
+import { TAU, RAD2DEG, labState } from './state.js';
 // Transforms a confusing negative angle into its positive twin
 export function normalize(a) { return (a % TAU + TAU) % TAU; }
 // Finds the fastest directional route avoiding unnecessary wraps around the circle
@@ -61,3 +61,9 @@ export function segmentArea(r, deg) {
     let bracket = rad - Math.sin(rad);
     return roundToTwo(0.5 * r * r * bracket);
 }
+
+// Vectors Math Helpers
+export function vecMagnitude(v) { return Math.hypot(v.x, v.y); }
+export function vecAngleDeg(v) { return normalize(Math.atan2(v.y, v.x)) * RAD2DEG; }
+export function vecAdd(v1, v2) { return { x: v1.x + v2.x, y: v1.y + v2.y }; }
+export function vecSub(v1, v2) { return { x: v1.x - v2.x, y: v1.y - v2.y }; }

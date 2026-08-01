@@ -79,6 +79,18 @@ export let labState = {
       towerTopY: 150,
       boatX: 380
     }
+  },
+
+  vectors: {
+    mode: 'free',
+    A: { x: 3, y: 2 },
+    B: { x: -2, y: 3 }
+  },
+
+  boat: {
+    boatVel: { x: 1, y: 4 },
+    current: { x: 1, y: 0 },
+    challengeIndex: 0
   }
 };
 

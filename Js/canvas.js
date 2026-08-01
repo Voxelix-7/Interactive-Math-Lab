@@ -73,3 +73,38 @@ export function drawArc(ctx, cx, cy, r, start, end, color) {
     ctx.lineWidth = 4;
     ctx.stroke();
 }
+
+export function drawArrow(from, to, color, width = 3) {
+    const headLen = 12;
+    const angle = Math.atan2(to.y - from.y, to.x - from.x);
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.moveTo(from.x, from.y);
+    ctx.lineTo(to.x, to.y);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(to.x, to.y);
+    ctx.lineTo(to.x - headLen * Math.cos(angle - Math.PI / 6), to.y - headLen * Math.sin(angle - Math.PI / 6));
+    ctx.lineTo(to.x - headLen * Math.cos(angle + Math.PI / 6), to.y - headLen * Math.sin(angle + Math.PI / 6));
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.fill();
+}
+
+export function drawGrid(cx, cy, width, height, spacing = 30) {
+    ctx.save();
+    ctx.strokeStyle = "#eee0d0";
+    ctx.lineWidth = 1;
+    for (let gx = cx % spacing; gx < width; gx += spacing) {
+        ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, height); ctx.stroke();
+    }
+    for (let gy = cy % spacing; gy < height; gy += spacing) {
+        ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(width, gy); ctx.stroke();
+    }
+    ctx.strokeStyle = "#bcaaa4";
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(width, cy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, height); ctx.stroke();
+    ctx.restore();
+}

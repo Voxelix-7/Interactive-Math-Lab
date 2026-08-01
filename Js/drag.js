@@ -6,12 +6,16 @@ import { draw } from './canvas.js';
 
 // These are imported lazily to avoid circular imports
 // (canvas.js imports drag.js, so drag.js must not import canvas.js at the top level)
-let pythagorasModule, subtendedAnglesModule, sectorSegmentModule, unitCircleModule, elevDeprModule;
+let pythagorasModule, subtendedAnglesModule, sectorSegmentModule, vectorExplorerModule, boatModeModule;
 import('./modules/pythagoras.js').then(m => { pythagorasModule = m.pythagorasModule; });
 import('./modules/subtendedAngles.js').then(m => { subtendedAnglesModule = m.subtendedAnglesModule; });
 import('./modules/sectorSegment.js').then(m => { sectorSegmentModule = m.sectorSegmentModule; });
-import('./modules/unitCircle.js').then(m => { unitCircleModule = m.unitCircleModule; });
-import('./modules/elevationDepression.js').then(m => { elevDeprModule = m.elevDeprModule; });
+import('./modules/vectors.js').then(m => { vectorExplorerModule = m.vectorExplorerModule; boatModeModule = m.boatModeModule; });
+
+// Pixels-per-unit used by the Cartesian plane in vectors.js.
+// Kept as a local constant (mirrors UNIT exported from vectors.js) to avoid
+// a circular import between drag.js and vectors.js.
+const VEC_UNIT = 30;
 
 export function getPos(e) {
     const rect = canvas.getBoundingClientRect();
@@ -47,23 +51,36 @@ export function startDrag(e) {
         const p = { x: cx + drawRadius * Math.cos(angle), y: cy + drawRadius * Math.sin(angle) };
         if (Math.hypot(x - p.x, y - p.y) < 25) { setDragging("sectorPoint"); }
 
-    } else if (currentModule === unitCircleModule) {
+    } else if (currentModule === vectorExplorerModule) {
+        // Click-anywhere-on-the-grid repositioning: snap the nearer of A's head
+        // or B's head to the click point immediately, then continue dragging it.
         const cx = canvas.width / 2, cy = canvas.height / 2;
-        const r = labState.unitCircle.radius;
-        const theta = labState.unitCircle.angle;
-        const p = { x: cx + r * Math.cos(theta), y: cy - r * Math.sin(theta) };
-        if (Math.hypot(x - p.x, y - p.y) < 25) { setDragging("unitCirclePoint"); }
-    } else if (currentModule === elevDeprModule) {
-        const groundY = 340, eyeY = groundY - 30, buildingX = 440, towerX = 110;
-        if (elevDeprModule.viewMode === 'Angle of Elevation') {
-            const { personX, buildingTopY } = labState.elevDepr.elevation;
-            if (Math.hypot(x - personX, y - eyeY) < 25) setDragging("edPerson");
-            else if (Math.hypot(x - buildingX, y - buildingTopY) < 25) setDragging("edBuildingTop");
+        const { A, B, mode } = labState.vectors;
+        const headB = mode === 'headToTail' ? { x: A.x + B.x, y: A.y + B.y } : { x: B.x, y: B.y };
+        const pA = { x: cx + A.x * VEC_UNIT, y: cy - A.y * VEC_UNIT };
+        const pB = { x: cx + headB.x * VEC_UNIT, y: cy - headB.y * VEC_UNIT };
+        const dA = Math.hypot(x - pA.x, y - pA.y);
+        const dB = Math.hypot(x - pB.x, y - pB.y);
+        const newPoint = { x: (x - cx) / VEC_UNIT, y: (cy - y) / VEC_UNIT };
+
+        if (dA <= dB) {
+            setDragging("vecA");
+            labState.vectors.A = newPoint;
         } else {
-            const { towerTopY, boatX } = labState.elevDepr.depression;
-            if (Math.hypot(x - towerX, y - towerTopY) < 25) setDragging("edObserver");
-            else if (Math.hypot(x - boatX, y - groundY) < 25) setDragging("edBoat");
+            setDragging("vecB");
+            labState.vectors.B = mode === 'headToTail'
+                ? { x: newPoint.x - A.x, y: newPoint.y - A.y }
+                : newPoint;
         }
+        draw();
+
+    } else if (currentModule === boatModeModule) {
+        // Boat & River: any click anywhere on the grid repositions the boat's
+        // velocity vector head to that point, then continues dragging it.
+        const cx = canvas.width / 2, cy = canvas.height / 2;
+        setDragging("boatVec");
+        labState.boat.boatVel = { x: (x - cx) / VEC_UNIT, y: (cy - y) / VEC_UNIT };
+        draw();
     }
 }
 
@@ -86,7 +103,7 @@ export function drag(e) {
 
         // Import updateInputsFromTriangle from pythagoras module
         import('./modules/pythagoras.js').then(({ updateInputsFromTriangle }) => { updateInputsFromTriangle(); });
-
+        
     } else if (currentModule === sectorSegmentModule && dragging === "sectorPoint") {
        const cx = canvas.width / 2;
        const cy = canvas.height / 2;
@@ -98,25 +115,20 @@ export function drag(e) {
        if (input) input.value = labState[key].angleDeg;
        sectorSegmentModule.updateStats();
 
-    } else if (currentModule === unitCircleModule && dragging === "unitCirclePoint") {
+    } else if (currentModule === vectorExplorerModule && dragging && dragging.startsWith('vec')) {
         const cx = canvas.width / 2, cy = canvas.height / 2;
-        // Flip y back to standard math convention (up = positive) before computing the angle
-        let angle = Math.atan2(cy - y, x - cx);
-        if (angle < 0) angle += TAU;
-        labState.unitCircle.angle = angle;
-    } else if (currentModule === elevDeprModule && dragging.startsWith("ed")) {
-        const groundY = 340, eyeY = groundY - 30;
-        const e = labState.elevDepr.elevation, d = labState.elevDepr.depression;
-        if (dragging === "edPerson") {
-            e.personX = Math.max(60, Math.min(360, x));
-        } else if (dragging === "edBuildingTop") {
-            e.buildingTopY = Math.max(70, Math.min(eyeY - 20, y));
-        } else if (dragging === "edObserver") {
-            d.towerTopY = Math.max(70, Math.min(groundY - 60, y));
-        } else if (dragging === "edBoat") {
-            d.boatX = Math.max(190, Math.min(500, x));
+        const newPoint = { x: (x - cx) / VEC_UNIT, y: (cy - y) / VEC_UNIT };
+        if (dragging === 'vecA') {
+            labState.vectors.A = newPoint;
+        } else if (dragging === 'vecB') {
+            labState.vectors.B = labState.vectors.mode === 'headToTail'
+                ? { x: newPoint.x - labState.vectors.A.x, y: newPoint.y - labState.vectors.A.y }
+                : newPoint;
         }
-        elevDeprModule.updateStats();
+
+    } else if (currentModule === boatModeModule && dragging === 'boatVec') {
+        const cx = canvas.width / 2, cy = canvas.height / 2;
+        labState.boat.boatVel = { x: (x - cx) / VEC_UNIT, y: (cy - y) / VEC_UNIT };
     }
 
     draw();

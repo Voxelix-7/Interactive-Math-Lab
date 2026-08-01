@@ -10,6 +10,7 @@ import { unitCircleModule } from './modules/unitCircle.js';
 import { sectorSegmentModule } from './modules/sectorSegment.js';
 import { elevDeprModule } from './modules/elevationDepression.js';
 import { setCurrentModule } from './state.js';
+import { vectorExplorerModule, boatModeModule } from './modules/vectors.js';
 
 // App Initialization 
 window.onload = function() {
@@ -21,7 +22,8 @@ window.onload = function() {
     const menus = [
     { btn: document.getElementById("geometryBtn"), element: document.getElementById("geoDropdown") },
     { btn: document.getElementById("circlesBtn"), element: document.getElementById("circlesDropdown") },
-    { btn: document.getElementById("trigBtn"), element: document.getElementById("trigDropdown") }
+    { btn: document.getElementById("trigBtn"), element: document.getElementById("trigDropdown") },
+    { btn: document.getElementById("vectorsBtn"), element: document.getElementById("vectorsDropdown") }
     ];
     const closeAllMenus = () => {menus.forEach(menu => menu.element?.classList.remove("show-menu"));};
 
@@ -70,7 +72,9 @@ window.onload = function() {
     circlePropsBtn: circleModule,
     sectorSegmentBtn: sectorSegmentModule,
     unitCircleBtn: unitCircleModule,
-    elevationDepressionBtn: elevDeprModule
+    elevationDepressionBtn: elevDeprModule, 
+    vectorExplorerBtn: vectorExplorerModule,
+    boatModeBtn: boatModeModule
     };
     Object.entries(labs).forEach(([btnId, module]) => {
     setupLab(btnId, () => {
