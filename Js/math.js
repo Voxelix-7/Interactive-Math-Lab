@@ -62,7 +62,7 @@ export function segmentArea(r, deg) {
     return roundToTwo(0.5 * r * r * bracket);
 }
 
-// Vectors Math Helpers
+// vectors module
 export function vecMagnitude(v) { return Math.hypot(v.x, v.y); }
 export function vecAngleDeg(v) { return normalize(Math.atan2(v.y, v.x)) * RAD2DEG; }
 export function vecAdd(v1, v2) { return { x: v1.x + v2.x, y: v1.y + v2.y }; }
