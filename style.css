@@ -80,6 +80,7 @@ body {
   height: 100vh;
   width: 100vw;
   background-color: var(--bg-warm);
+  overflow: hidden;
 }
 
 .lab-title {
@@ -96,6 +97,8 @@ body {
   var(--primary-warm), var(--accent-warm));
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+  flex-shrink: 0;
 }
 
 .category {
@@ -126,10 +129,13 @@ body {
 
 /* RIGHT SIDE */
 .main-area {
+  height: 100%;
   flex: 1;
   display: flex;
   flex-direction: column;
   padding: 20px;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .canvas-area {
