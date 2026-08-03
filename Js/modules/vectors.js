@@ -26,10 +26,10 @@ function vectorStatsHTML(id, label, color, editable = false) {
     const inputsHTML = editable ? `
         <div style="margin-top:8px; display:flex; gap:10px; justify-content:center; align-items:center;">
             <label style="font-size:0.8em; color:#4e342e;">X:
-                <input type="number" id="${id}InputX" step="1" style="width:60px; padding:4px; margin-left:4px;">
+                <input type="number" id="${id}InputX" step="1" min="-20" max="20" style="width:60px; padding:4px; margin-left:4px;">
             </label>
             <label style="font-size:0.8em; color:#4e342e;">Y:
-                <input type="number" id="${id}InputY" step="1" style="width:60px; padding:4px; margin-left:4px;">
+                <input type="number" id="${id}InputY" step="1" min="-20" max="20" style="width:60px; padding:4px; margin-left:4px;">
             </label>
         </div>` : '';
     return `
@@ -161,13 +161,19 @@ export const vectorExplorerModule = {
             const inX = document.getElementById(id + 'InputX');
             const inY = document.getElementById(id + 'InputY');
             if (inX) inX.addEventListener('change', () => {
-                const val = Math.round(parseFloat(inX.value));
-                labState.vectors[key].x = isNaN(val) ? 0 : val;
+                let val = Math.round(parseFloat(inX.value));
+                if (isNaN(val)) val = 0;
+                val = Math.max(-20, Math.min(20, val));
+                labState.vectors[key].x = val;
+                inX.value = val;
                 draw();
             });
             if (inY) inY.addEventListener('change', () => {
-                const val = Math.round(parseFloat(inY.value));
-                labState.vectors[key].y = isNaN(val) ? 0 : val;
+                let val = Math.round(parseFloat(inY.value));
+                if (isNaN(val)) val = 0;
+                val = Math.max(-20, Math.min(20, val));
+                labState.vectors[key].y = val;
+                inY.value = val;
                 draw();
             });
         });
