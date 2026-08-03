@@ -35,7 +35,7 @@ function vectorStatsHTML(id, label, color, editable = false) {
     return `
         <div style="margin-bottom:10px;">
             <b style="color:${color};">${label}</b><br>
-            <span style="font-size:0.9em;">
+            <span style="font-size:1.05;">
             X: <span id="${id}X">0</span>&nbsp; Y: <span id="${id}Y">0</span><br>
             Magnitude √(x²+y²): <b><span id="${id}Mag">0</span></b><br>
             tanθ = y/x: <span id="${id}Tan">0</span><br>
