@@ -1,7 +1,6 @@
 *, *::before, *::after {
   box-sizing: border-box;
 }
-
 :root {
   --primary-warm: #d35400;
   --accent-warm: #f39c12;
