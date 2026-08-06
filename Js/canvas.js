@@ -10,8 +10,10 @@ let activeResizeHandler = null;
 
 function sizeCanvasToContainer(canvasEl, container) {
     const rect = container.getBoundingClientRect();
-    const w = Math.max(300, Math.floor(rect.width));
-    const h = Math.max(250, Math.floor(rect.height));
+    // Lower floors than before so the canvas can still shrink sensibly on
+    // narrow phones instead of forcing the container (and page) to overflow.
+    const w = Math.max(240, Math.floor(rect.width));
+    const h = Math.max(180, Math.floor(rect.height));
     canvasEl.width = w;
     canvasEl.height = h;
     // Inline size overrides the shared `canvas { max-width:100%; height:auto }`
@@ -33,6 +35,7 @@ export function createCanvasOnce(opts = {}) {
 
     if (activeResizeHandler) {
         window.removeEventListener('resize', activeResizeHandler);
+        window.removeEventListener('orientationchange', activeResizeHandler);
         activeResizeHandler = null;
     }
 
@@ -45,6 +48,7 @@ export function createCanvasOnce(opts = {}) {
             draw();
         };
         window.addEventListener('resize', activeResizeHandler);
+        window.addEventListener('orientationchange', activeResizeHandler);
     } else {
         newCanvas.width = 550;
         newCanvas.height = 400;
