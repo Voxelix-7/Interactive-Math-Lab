@@ -18,7 +18,7 @@ function sizeCanvasToContainer(canvasEl, container) {
     canvasEl.height = h;
     // Inline size overrides the shared `canvas { max-width:100%; height:auto }`
     // rule so the drawing buffer actually fills the container instead of
-    // being constrained to its intrinsic aspect ratio.
+    // being constrained to its intrinsic aspect ratio
     canvasEl.style.width = w + "px";
     canvasEl.style.height = h + "px";
 }
