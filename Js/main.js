@@ -19,6 +19,9 @@ window.onload = function() {
     const startBtn = document.getElementById("startBtn");
     const welcomeScreen = document.querySelector(".welcome-screen");
     const labInterface = document.getElementById("lab-interface");
+    const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+    const navBackdrop = document.getElementById("navBackdrop");
+    const navigation = document.getElementById("topicNavigation");
 
     // Generic category-menu wiring: every top-level ".category" that contains
     // a ".category-menu" gets toggle/close behavior automatically. This means
@@ -31,6 +34,26 @@ window.onload = function() {
         .filter(({ element }) => element);
 
     const closeAllMenus = () => { menus.forEach(menu => menu.element?.classList.remove("show-menu")); };
+
+    const setNavigationOpen = (isOpen) => {
+        navigation?.classList.toggle("nav-open", isOpen);
+        navBackdrop?.classList.toggle("is-visible", isOpen);
+        navBackdrop?.setAttribute("aria-hidden", String(!isOpen));
+        mobileMenuBtn?.setAttribute("aria-expanded", String(isOpen));
+        document.body.classList.toggle("menu-open", isOpen);
+    };
+
+    mobileMenuBtn?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        setNavigationOpen(!navigation?.classList.contains("nav-open"));
+    });
+    navBackdrop?.addEventListener("click", () => setNavigationOpen(false));
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            setNavigationOpen(false);
+            closeAllMenus();
+        }
+    });
 
     if (startBtn) {
         startBtn.addEventListener('click', () => {
@@ -62,6 +85,7 @@ window.onload = function() {
                 e.stopPropagation();
                 callback();
                 closeAllMenus();
+                setNavigationOpen(false);
             });
         }
     };

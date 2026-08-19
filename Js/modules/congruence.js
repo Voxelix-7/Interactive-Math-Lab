@@ -51,7 +51,7 @@ export function renderCongruenceUI() {
                     return `<button onclick="setCongMode('${m}')" style="flex:1; padding:10px; cursor:pointer; border:1px solid #ff9800; border-radius:6px; font-weight:bold; background:${active ? '#ff9800' : '#f5f5f5'}; color:${active ? 'white' : '#616161'}; transition: 0.3s; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">${m}</button>`;
                 }).join('')}
             </div>
-            <div style="width: 70%; margin: 0 auto; min-width: 250px;">
+            <div style="width: 70%; max-width: 100%; margin: 0 auto;">
                 <div id="cong-sliders">${generateCongSliders()}</div>
             </div>
             <div id="cong-msg" class="dashed-container" style="text-align:center; padding:12px; margin-top:15px; min-height:45px; color: #6d4c41;"></div>

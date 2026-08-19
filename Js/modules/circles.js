@@ -54,7 +54,7 @@ export function renderCirclePropertiesUI() {
     dataPanel.innerHTML = `
         <div id="circle-controls" style="color: #4e342e; padding: 15px; background: transparent;">
             <h3 class="lab-title">Circle Properties</h3>
-            <div style="width: 66%; margin: 0 auto; min-width: 250px;">
+            <div style="width: 66%; max-width: 100%; margin: 0 auto;">
                 <div style="margin-bottom:15px;">
                     <label style="display:block; font-size:0.85em; color: #4e342e;">
                         Radius (r): <span id="valR" style="color:#f39c12; font-weight:bold;">5.0</span> cm

@@ -15,9 +15,13 @@
     </div>
   </div>
   <div id="lab-interface" class="hidden">
+    <button id="mobileMenuBtn" class="mobile-menu-button" type="button" aria-label="Open math topics" aria-controls="topicNavigation" aria-expanded="false">
+      <span aria-hidden="true">☰</span>
+    </button>
+    <div id="navBackdrop" class="nav-backdrop" aria-hidden="true"></div>
     <div class="lab-layout">
       
-      <div class="column">
+      <div class="column" id="topicNavigation" role="navigation" aria-label="Math topics">
         <!-- Geometry category -->
         <div class="category" id="geometryBtn">
           Geometry 
