@@ -29,15 +29,15 @@ export const elevDeprViews = {
                 Horizontal Distance: <b style="color:#f39c12;"><span id="edDist">0</span></b> units<br>
                 Vertical Height: <b style="color:#3498db;"><span id="edHeight">0</span></b> units<br>
                 Angle of Elevation (θ): <b style="color:#d35400;"><span id="edAngle">0</span>°</b>
-                <div style="margin-top:8px; padding-top:8px; border-top:1px dashed #bcaaa4;">
+                <div class="data-divider">
                     sin θ = <span id="edSin">0</span> &nbsp;|&nbsp;
                     cos θ = <span id="edCos">0</span> &nbsp;|&nbsp;
                     tan θ = <span id="edTan">0</span>
                 </div>
             </div>
         </div>
-        <div style="margin-bottom:20px; display:flex; align-items:center; justify-content: center; gap:10px; border-top: 1px solid #eee; padding-top:10px;">
-        <input type="checkbox" id="edConstructionCheck" ${labState.elevDepr.showConstruction ? 'checked' : ''} style="width: 18px; height: 18px; accent-color:#f39c12; cursor: pointer;">
+        <div class="control-row">
+        <input type="checkbox" id="edConstructionCheck" ${labState.elevDepr.showConstruction ? 'checked' : ''} class="lab-checkbox">
         <label style="font-size:0.85em; cursor: pointer; color: #6d4c41;" for="edConstructionCheck">Show Construction Lines</label>
         </div>
         <p class="lab-note">The angle of elevation is measured upward from the horizontal.</p>`,
@@ -48,15 +48,15 @@ export const elevDeprViews = {
                 Horizontal Distance: <b style="color:#f39c12;"><span id="edDist">0</span></b> units<br>
                 Vertical Height: <b style="color:#3498db;"><span id="edHeight">0</span></b> units<br>
                 Angle of Depression (θ): <b style="color:#d35400;"><span id="edAngle">0</span>°</b>
-                <div style="margin-top:8px; padding-top:8px; border-top:1px dashed #bcaaa4;">
+                <div class="data-divider">
                     sin θ = <span id="edSin">0</span> &nbsp;|&nbsp;
                     cos θ = <span id="edCos">0</span> &nbsp;|&nbsp;
                     tan θ = <span id="edTan">0</span>
                 </div>
             </div>
         </div>
-        <div style="margin-bottom:20px; display:flex; align-items:center; justify-content: center; gap:10px; border-top: 1px solid #eee; padding-top:10px;">
-        <input type="checkbox" id="edConstructionCheck" ${labState.elevDepr.showConstruction ? 'checked' : ''} style="width: 18px; height: 18px; accent-color:#f39c12; cursor: pointer;">
+        <div class="control-row">
+        <input type="checkbox" id="edConstructionCheck" ${labState.elevDepr.showConstruction ? 'checked' : ''} class="lab-checkbox">
         <label style="font-size:0.85em; cursor: pointer; color: #6d4c41;" for="edConstructionCheck">Show Construction Lines</label>
         </div>
         <p class="lab-note">The angle of depression is measured downward from the horizontal.</p>`

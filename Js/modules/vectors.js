@@ -324,7 +324,7 @@ export const boatModeModule = {
                     ${vectorStatsHTML('boatR', 'Actual Path (Resultant)', '#2ecc71')}
                 </div>
                 <button id="setSailBtn" class="refresh-quad-btn" style="margin-top:15px;">Set Sail ⛵</button>
-                <div id="boatMsg" style="text-align:center; padding:10px; margin-top:12px; border:2px dashed #bcaaa4; border-radius:8px; min-height:30px; background: rgba(239, 235, 233, 0.3); color: #6d4c41;"></div>
+                <div id="boatMsg" class="dashed-container" style="text-align:center; padding:10px; margin-top:12px; min-height:30px; color: #6d4c41;"></div>
             </div>
         `);
     },

@@ -317,6 +317,39 @@ input[type="range"] {
     outline: none;
 }
 
+.lab-slider {
+  cursor: pointer;
+}
+
+.lab-checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: #f39c12;
+  cursor: pointer;
+}
+
+.control-row {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-top: 1px solid #eee;
+  padding-top: 10px;
+}
+
+.dashed-container {
+  border: 2px dashed #bcaaa4;
+  border-radius: 8px;
+  background: rgba(239, 235, 233, 0.3);
+}
+
+.data-divider {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed #bcaaa4;
+}
+
 /* Thumb */
 input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;

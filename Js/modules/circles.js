@@ -60,15 +60,15 @@ export function renderCirclePropertiesUI() {
                         Radius (r): <span id="valR" style="color:#f39c12; font-weight:bold;">5.0</span> cm
                     </label>
                     <input type="range" id="circleRadiusSlider" min="1" max="10" step="0.1" value="5"
-                           style="width:100%; accent-color:#f39c12; cursor: pointer;">
+                              class="lab-slider" style="accent-color:#f39c12;">
                 </div>
             </div>
-            <div id="circleStats" style="text-align:left; padding:12px; border:2px dashed #bcaaa4; border-radius:8px; background: rgba(239, 235, 233, 0.3); color: #6d4c41; min-height: 100px;">
+            <div id="circleStats" class="dashed-container" style="text-align:left; padding:12px; color: #6d4c41; min-height: 100px;">
                 <div style="text-align: center; width: 100%;">
                     <div style="font-size:0.9em; line-height: 1.8; color: #4e342e;">
                         Diameter (d): <b><span id="statD">10.0</span></b> cm<br>
                         Circumference (C): <b><span id="statC">31.4</span></b> cm<br>
-                        <div style="margin-top:8px; padding-top:8px; border-top:1px dashed #bcaaa4;">
+                        <div class="data-divider">
                             Area (A): <b style="font-size:1.1em; color:#bf360c;"><span id="statA">78.5</span></b> cm²
                         </div>
                     </div>

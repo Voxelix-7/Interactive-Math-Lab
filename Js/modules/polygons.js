@@ -121,18 +121,18 @@ export function renderPolygonUI() {
             <div style="width: 66%; margin: 0 auto;">
                 <div style="margin-bottom:15px;">
                     <label style="display:block; font-size:0.85em; color: #4e342e;">Number of Sides: <span id="valSideCount">${polySides}</span></label>
-                    <input type="range" id="sidesSlider" min="3" max="12" value="${polySides}" style="width:100%; accent-color:#f39c12; cursor: pointer;">
+                    <input type="range" id="sidesSlider" min="3" max="12" value="${polySides}" class="lab-slider" style="accent-color:#f39c12;">
                 </div>
                 <div style="margin-bottom:15px;">
                     <label style="display:block; font-size:0.85em; color: #4e342e;">Adjust Size (Side: <span id="valSide">${currentSideCm}</span> cm)</label>
-                    <input type="range" id="radiusSlider" min="40" max="150" value="${polyRadius}" style="width:100%; accent-color:#f39c12; cursor: pointer;">
+                    <input type="range" id="radiusSlider" min="40" max="150" value="${polyRadius}" class="lab-slider" style="accent-color:#f39c12;">
                 </div>
-                <div style="margin-bottom:20px; display:flex; align-items:center; justify-content: center; gap:10px; border-top: 1px solid #eee; padding-top:10px;">
-                    <input type="checkbox" id="decompCheck" ${showDecomposition ? 'checked' : ''} style="width: 18px; height: 18px; accent-color:#f39c12; cursor: pointer;">
+                <div class="control-row">
+                    <input type="checkbox" id="decompCheck" ${showDecomposition ? 'checked' : ''} class="lab-checkbox">
                     <label style="font-size:0.85em; cursor: pointer; color: #6d4c41;" for="decompCheck">Show Triangle Decomposition</label>
                 </div>
             </div>
-            <div id="polyStats" style="text-align:left; padding:12px; border:2px dashed #bcaaa4; border-radius:8px; background: rgba(239, 235, 233, 0.3); color: #6d4c41; min-height: 100px;"></div>
+            <div id="polyStats" class="dashed-container" style="text-align:left; padding:12px; color: #6d4c41; min-height: 100px;"></div>
         </div>
         <p class="lab-note">
             The area of a regular polygon with n number of sides and length of its side is X is:

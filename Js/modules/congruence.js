@@ -54,7 +54,7 @@ export function renderCongruenceUI() {
             <div style="width: 70%; margin: 0 auto; min-width: 250px;">
                 <div id="cong-sliders">${generateCongSliders()}</div>
             </div>
-            <div id="cong-msg" style="text-align:center; padding:12px; border:2px dashed #bcaaa4; border-radius:8px; margin-top:15px; min-height:45px; background: rgba(239, 235, 233, 0.3); color: #6d4c41;"></div>
+            <div id="cong-msg" class="dashed-container" style="text-align:center; padding:12px; margin-top:15px; min-height:45px; color: #6d4c41;"></div>
         </div>
     `;
     attachCongListeners();
@@ -73,7 +73,7 @@ export function createCongSlider(id, label, min, max, val) {
     return `
         <div style="margin-bottom:12px;">
             <label style="display:block; font-size:0.85em; color: #4e342e;">${label}: <span id="val${id}" style="color:#ff9800; font-weight:bold;">${val}</span></label>
-            <input type="range" id="${id}" min="${min}" max="${max}" value="${val}" style="width:100%; accent-color:#ff9800; cursor: pointer;">
+            <input type="range" id="${id}" min="${min}" max="${max}" value="${val}" class="lab-slider" style="accent-color:#ff9800;">
         </div>`;
 }
 
