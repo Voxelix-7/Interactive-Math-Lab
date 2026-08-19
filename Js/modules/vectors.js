@@ -26,16 +26,16 @@ function vectorStatsHTML(id, label, color, editable = false) {
     const inputsHTML = editable ? `
         <div style="margin-top:8px; display:flex; gap:10px; justify-content:center; align-items:center;">
             <label style="font-size:0.8em; color:#4e342e;">X:
-                <input type="number" id="${id}InputX" step="1" min="-20" max="20" style="width:60px; padding:4px; margin-left:4px;">
+                <input type="number" id="${id}InputX" step="1" min="-20" max="20" class="vectors-input">
             </label>
             <label style="font-size:0.8em; color:#4e342e;">Y:
-                <input type="number" id="${id}InputY" step="1" min="-20" max="20" style="width:60px; padding:4px; margin-left:4px;">
+                <input type="number" id="${id}InputY" step="1" min="-20" max="20" class="vectors-input">
             </label>
         </div>` : '';
     return `
         <div style="margin-bottom:10px;">
             <b style="color:${color};">${label}</b><br>
-            <span style="font-size:1.05;">
+            <span style="font-size:0.9em;">
             X: <span id="${id}X">0</span>&nbsp; Y: <span id="${id}Y">0</span><br>
             Magnitude √(x²+y²): <b><span id="${id}Mag">0</span></b><br>
             tanθ = y/x: <span id="${id}Tan">0</span><br>

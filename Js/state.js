@@ -53,23 +53,23 @@ export let labState = {
       C: 3.5
     }
   },
-  
-    sector: {
-      radius: 5,
-      angleDeg: 90
-    },
 
-    segment: {
-      radius: 5,
-      angleDeg: 90
-    },
+  sector: {
+    radius: 5,
+    angleDeg: 90
+  },
+
+  segment: {
+    radius: 5,
+    angleDeg: 90
+  },
 
   unitCircle: {
-      radius: 110,
-      angle: Math.PI / 4
-    },
-  
-   elevDepr: {
+    radius: 110,
+    angle: 0
+  },
+
+  elevDepr: {
     showConstruction: true,
     elevation: {
       personX: 150,
@@ -77,10 +77,10 @@ export let labState = {
     },
     depression: {
       towerTopY: 150,
-      boatX: 380
+      boatX: 350
     }
   },
-     
+
   vectors: {
     mode: 'free', // 'free' | 'headToTail'
     A: { x: 3, y: 2 },

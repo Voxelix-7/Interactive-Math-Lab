@@ -8,7 +8,7 @@
 body {
   margin: 0;
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
   font-family: Arial, sans-serif;
 }
 
@@ -58,7 +58,7 @@ body {
 
 /* LAB INTERFACE */
 #lab-interface {
-  height: 100vh;
+  min-height: 100vh;
   width: 100vw;
   display: none;
   padding: 0;
@@ -77,9 +77,10 @@ body {
 }
 .lab-layout {
   display: flex;
-  height: 100vh;
+  min-height: 100vh;
   width: 100vw;
   background-color: var(--bg-warm);
+  align-items: stretch;
 }
 
 .lab-title {
@@ -91,7 +92,8 @@ body {
 /* LEFT COLUMN */
 .column {
   width: 220px;
-  height: 100%;
+  flex: 0 0 220px;
+  align-self: stretch;
   background: linear-gradient(135deg,
   var(--primary-warm), var(--accent-warm));
   display: flex;
@@ -127,6 +129,7 @@ body {
 /* RIGHT SIDE */
 .main-area {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   padding: 20px;
@@ -134,9 +137,14 @@ body {
 
 .canvas-area {
   background: white;
-  height: 65%;
+  width: 100%;
+  aspect-ratio: 550 / 400;
+  max-height: 400px;
+  box-sizing: border-box;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: center;
 }
 #dataPanel {
   position: relative;
@@ -243,11 +251,17 @@ input:focus {
 }
 /* triangle canva */
 canvas {
+  display: block;
   cursor: default;
-  max-width: 100%;
+  width: min(100%, 550px);
   height: auto;
   border-radius: 10px;
   background: white;
+}
+
+canvas.responsive-canvas {
+  width: 100%;
+  max-width: none;
 }
 /* result */
 .result {
@@ -452,7 +466,13 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 input[type="range"]::-webkit-slider-thumb:hover {
-    transform: scale(1.15);
+  transform: scale(1.15);
+}
+
+.vectors-input {
+  width:60px;
+  padding:4px;
+  margin-left:4px;
 }
 
 .is-hidden { display: none }
