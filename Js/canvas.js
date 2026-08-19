@@ -4,15 +4,21 @@ import { canvas, ctx, currentModule, setCanvas, setCtx } from './state.js';
 import { shortestDiff } from './math.js';
 import { infoBtn, factsBox } from './ui.js';
 
-export function createCanvasOnce() {
+let canvasResizeObserver = null;
+
+export function createCanvasOnce(options = {}) {
     const container = document.getElementById("canvas-container");
     if (!container || document.getElementById("myCanvas")) return;
+
+    if (!options.responsive) canvasResizeObserver?.disconnect();
 
     const newCanvas = Object.assign(document.createElement('canvas'), {
         id: "myCanvas",
         width: 550,
         height: 400
     });
+
+    if (options.responsive) newCanvas.classList.add('responsive-canvas');
 
     container.appendChild(newCanvas);
     setCanvas(newCanvas);
@@ -31,7 +37,23 @@ export function createCanvasOnce() {
         );
     });
 
-    draw();
+    if (options.responsive) {
+        const resizeCanvas = () => {
+            const width = Math.round(container.clientWidth);
+            const height = Math.round(container.clientHeight);
+            if (!width || !height || (newCanvas.width === width && newCanvas.height === height)) return;
+            newCanvas.width = width;
+            newCanvas.height = height;
+            draw();
+        };
+
+        canvasResizeObserver?.disconnect();
+        canvasResizeObserver = new ResizeObserver(resizeCanvas);
+        canvasResizeObserver.observe(container);
+        resizeCanvas();
+    } else {
+        draw();
+    }
 }
 
 export function draw() {
