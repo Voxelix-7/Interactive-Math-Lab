@@ -22,11 +22,15 @@ const VEC_UNIT = 30;
 export function getPos(e) {
     const rect = canvas.getBoundingClientRect();
     const t = (e.touches && e.touches[0]) || e;
-    return { x: t.clientX - rect.left, y: t.clientY - rect.top };
+    return {
+        x: (t.clientX - rect.left) * canvas.width / rect.width,
+        y: (t.clientY - rect.top) * canvas.height / rect.height
+    };
 }
 
 export function startDrag(e) {
     if (!canvas || !currentModule) return;
+    if (e.cancelable) e.preventDefault();
     const { x, y } = getPos(e);
 
     if (currentModule === pythagorasModule) {
@@ -109,6 +113,7 @@ export function startDrag(e) {
 
 export function drag(e) {
     if (!dragging) return;
+    if (e.cancelable) e.preventDefault();
     const { x, y } = getPos(e);
 
     if (currentModule === subtendedAnglesModule && dragging.startsWith("circle")) {

@@ -260,6 +260,7 @@ input:focus {
 canvas {
   display: block;
   cursor: default;
+  touch-action: none;
   width: min(100%, 550px);
   height: auto;
   border-radius: 10px;

@@ -30,7 +30,7 @@ export function createCanvasOnce(options = {}) {
         const events = [
             { target: newCanvas, types: ["mousedown", "touchstart"],  handler: startDrag },
             { target: window,    types: ["mousemove", "touchmove"],   handler: drag      },
-            { target: window,    types: ["mouseup",   "touchend"],    handler: stopDrag  }
+            { target: window,    types: ["mouseup", "touchend", "touchcancel"], handler: stopDrag }
         ];
         events.forEach(({ target, types, handler }) =>
             types.forEach(evt => target.addEventListener(evt, handler, { passive: false }))
