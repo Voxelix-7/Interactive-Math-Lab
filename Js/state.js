@@ -66,7 +66,7 @@ export let labState = {
 
   unitCircle: {
     radius: 110,
-    angle: 0
+    angle: Math.PI / 4
   },
 
   elevDepr: {
@@ -77,7 +77,7 @@ export let labState = {
     },
     depression: {
       towerTopY: 150,
-      boatX: 350
+      boatX: 380
     }
   },
 
