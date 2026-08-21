@@ -489,8 +489,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 #funFacts{
-  width: min(250px, calc(100vw - 32px));
-  max-width: 100%;
+  width: 250px;
   position: absolute;
   right: 0;
   top: 38px;
