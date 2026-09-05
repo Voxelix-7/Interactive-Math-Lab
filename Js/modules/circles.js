@@ -1,5 +1,3 @@
-// modules/circles.js Circle Properties lab module
-
 import { labState, canvas } from '../state.js';
 import { getCircleProps } from '../math.js';
 import { draw, createCanvasOnce } from '../canvas.js';
@@ -79,7 +77,7 @@ export function renderCirclePropertiesUI() {
 }
 
 export function attachCircleListeners() {
-    // Creating 5 constants at once
+    // creating 5 constants at once ..
     const rIn = document.getElementById("circleRadiusSlider"),
           vR  = document.getElementById("valR"),
           sD  = document.getElementById("statD"),
