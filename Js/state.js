@@ -1,4 +1,4 @@
-// state.js — All shared variables, constants, and app state
+// shared variables, constants, and app state
 
 export let canvas = null;
 export let ctx = null;
@@ -62,8 +62,6 @@ export let labState = {
   
 };
 
-// Other files import these to UPDATE the variables above,
-// because you cannot directly reassign an imported `let`.
 export function setCanvas(c)        { canvas = c; }
 export function setCtx(c)           { ctx = c; }
 export function setCurrentModule(m) { currentModule = m; }
