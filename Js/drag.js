@@ -1,11 +1,9 @@
-// drag.js — Mouse and touch drag system
+// Mouse and touch drag system
 
 import { canvas, currentModule, dragging, setDragging, labState, TAU } from './state.js';
 import { getDynamicScale, toRad } from './math.js';
 import { draw } from './canvas.js';
 
-// These are imported lazily to avoid circular imports
-// (canvas.js imports drag.js, so drag.js must not import canvas.js at the top level)
 let pythagorasModule, subtendedAnglesModule, sectorSegmentModule;
 import('./modules/pythagoras.js').then(m => { pythagorasModule = m.pythagorasModule; });
 import('./modules/subtendedAngles.js').then(m => { subtendedAnglesModule = m.subtendedAnglesModule; });
@@ -52,7 +50,7 @@ export function drag(e) {
 
     if (currentModule === subtendedAnglesModule && dragging.startsWith("circle")) {
         const cx = canvas.width / 2, cy = canvas.height / 2;
-        const key = dragging[6]; // "circleA" → "A"
+        const key = dragging[6];
         let angle = Math.atan2(y - cy, x - cx);
         labState.subtendedAngles.points[key] = angle < 0 ? angle + Math.PI * 2 : angle;
 
@@ -63,7 +61,7 @@ export function drag(e) {
         else if (dragging === "C")
             labState.pythagoras.sideB = Math.max(1, Math.min(500, (labState.pythagoras.originY - y) / s));
 
-        // Import updateInputsFromTriangle from pythagoras module
+        // Imports updateInputsFromTriangle from pythagoras module
         import('./modules/pythagoras.js').then(({ updateInputsFromTriangle }) => { updateInputsFromTriangle(); });
         
     } else if (currentModule === sectorSegmentModule && dragging === "sectorPoint") {
