@@ -1,4 +1,4 @@
-// modules/vectors.js — Vector Explorer + Boat & River labs
+// Vector Explorer + Boat & River labs
 import { labState, canvas } from '../state.js';
 import { vecMagnitude, vecAngleDeg, vecAdd } from '../math.js';
 import { draw, createCanvasOnce, drawArrow, drawGrid, drawDragger } from '../canvas.js';
@@ -6,16 +6,14 @@ import { setPanel } from '../ui.js';
 
 export const UNIT = 30; // px per grid unit — also used by drag.js
 
-// Colors cycled through for each new random "extra" vector, kept visually
-// distinct from the fixed red (A) / blue (B) / green (Resultant) trio.
+// Colors cycled through for each new random "extra" vector, kept visually, distinct from the fixed red (A) / blue (B) / green (Resultant) trio.
 const EXTRA_COLORS = ['#9b59b6', '#16a085', '#e91e63', '#795548', '#607d8b', '#8e44ad', '#00838f', '#c0392b'];
 
 export function toCanvas(cx, cy, v) {
     return { x: cx + v.x * UNIT, y: cy - v.y * UNIT };
 }
 
-// Shows whole numbers as-is and only falls back to 2 decimals when a value
-// genuinely isn't a whole number (magnitude/tan are often irrational).
+// Shows whole numbers as-is and only falls back to 2 decimals when a value genuinely isn't a whole number (magnitude/tan are often irrational)
 function fmt(n) {
     if (!isFinite(n)) return "0";
     const rounded = Math.round(n);
@@ -55,7 +53,6 @@ function fillVectorStats(id, v) {
     document.getElementById(id + 'Ang').innerText = vecMagnitude(v) > 0.001 ? Math.round(vecAngleDeg(v)) : 0;
 
     // Keep editable inputs synced with drags, but never fight the user
-    // while they're actively typing in that same field.
     const inX = document.getElementById(id + 'InputX');
     const inY = document.getElementById(id + 'InputY');
     if (inX && document.activeElement !== inX) inX.value = Math.round(v.x);
@@ -75,10 +72,7 @@ function drawDashedComponents(ctx, from, to, color) {
     ctx.restore();
 }
 
-// ---------------------------------------------------------------- //
-//  LAB 1 — Vector Explorer (free vectors + head-to-tail toggle)
-// ---------------------------------------------------------------- //
-
+// Vector explorer
 export const vectorExplorerModule = {
     facts: [
         "A vector has both magnitude and direction, unlike a scalar which only has size",
@@ -154,9 +148,7 @@ export const vectorExplorerModule = {
             draw();
         };
 
-        // Editable X/Y inputs for the two main vectors. B is always stored
-        // as its own intrinsic (dx, dy), even in head-to-tail mode, so
-        // editing A never has to touch B and vice versa.
+        // Editable X/Y inputs for the two main vectors. B is always stored so editing A never has to touch B and vice versa.
         [['vecA', 'A'], ['vecB', 'B']].forEach(([id, key]) => {
             const inX = document.getElementById(id + 'InputX');
             const inY = document.getElementById(id + 'InputY');
@@ -241,8 +233,7 @@ export const vectorExplorerModule = {
         const { A, B } = labState.vectors;
         const pOrigin = toCanvas(cx, cy, { x: 0, y: 0 });
 
-        // Independent random extras, drawn first so the main A/B/R trio
-        // always renders on top and stays visually primary.
+        // Independent random extras, drawn first so the main A/B/R trio stay visually primary
         labState.vectors.extras.forEach((v, i) => {
             const pHead = toCanvas(cx, cy, v);
             drawArrow(pOrigin, pHead, v.color, 2.5);
@@ -251,8 +242,7 @@ export const vectorExplorerModule = {
             ctx.fillText(`V${i + 1}`, pHead.x + 8, pHead.y - 8);
         });
 
-        // transitionProgress smoothly slides B's tail between the origin (free)
-        // and A's head (head-to-tail) — same math drives both modes
+        // Head to tail
         const tailB = { x: A.x * this.transitionProgress, y: A.y * this.transitionProgress };
         const headB = vecAdd(tailB, B);
         const R = vecAdd(A, B);
@@ -282,10 +272,7 @@ export const vectorExplorerModule = {
     }
 };
 
-// ---------------------------------------------------------------- //
-//  LAB 2 — Boat & River (boat velocity + current → resultant path)
-// ---------------------------------------------------------------- //
-
+// Boat view
 export const boatModeModule = {
     challenges: [
         { name: "Calm Crossing — weak current",     current: { x: 1,   y: 0 }, target: { x: 0,    y: 5 }, tolerance: 0.6 },
