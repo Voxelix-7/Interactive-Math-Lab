@@ -1,5 +1,3 @@
-// modules/pythagoras.js Pythagorean Theorem lab module
-
 import { labState, canvas } from '../state.js';
 import { getDynamicScale } from '../math.js';
 import { draw, createCanvasOnce, drawDragger, drawSimpleSquare, drawHypotenuseSquare } from '../canvas.js';
