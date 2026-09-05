@@ -65,7 +65,7 @@ export const sectorSegmentModule = {
     },
     getFacts() { return this.modes[this.viewMode]?.facts; },
 
-    // which labState slice belongs to the current mode
+    // which labState part belongs to the current mode
     stateKey() { return this.viewMode === 'Circular Sector' ? 'sector' : 'segment'; },
 
     init() {
