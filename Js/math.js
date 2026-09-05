@@ -1,4 +1,4 @@
-// math.js — Pure math helper functions
+// Pure math helper functions
 
 import { TAU, labState } from './state.js';
 // Transforms a confusing negative angle into its positive twin
