@@ -23,11 +23,7 @@ window.onload = function() {
     const navBackdrop = document.getElementById("navBackdrop");
     const navigation = document.getElementById("topicNavigation");
 
-    // Generic category-menu wiring: every top-level ".category" that contains
-    // a ".category-menu" gets toggle/close behavior automatically. This means
-    // adding a brand new category in index.html never requires touching this
-    // file again — a category left out of a hardcoded list would otherwise
-    // silently never open.
+    // .cateogry menu
     const categoryEls = Array.from(document.querySelectorAll(".category"));
     const menus = categoryEls
         .map(btn => ({ btn, element: btn.querySelector(".category-menu") }))
