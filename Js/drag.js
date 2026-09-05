@@ -1,11 +1,10 @@
-// drag.js — Mouse and touch drag system
+// Mouse and touch drag system
 
 import { canvas, currentModule, dragging, setDragging, labState, TAU } from './state.js';
 import { getDynamicScale, toRad } from './math.js';
 import { draw } from './canvas.js';
 
 // These are imported lazily to avoid circular imports
-// (canvas.js imports drag.js, so drag.js must not import canvas.js at the top level)
 let pythagorasModule, subtendedAnglesModule, sectorSegmentModule, unitCircleModule, elevDeprModule, vectorExplorerModule, boatModeModule;
 import('./modules/pythagoras.js').then(m => { pythagorasModule = m.pythagorasModule; });
 import('./modules/subtendedAngles.js').then(m => { subtendedAnglesModule = m.subtendedAnglesModule; });
@@ -15,8 +14,6 @@ import('./modules/elevationDepression.js').then(m => { elevDeprModule = m.elevDe
 import('./modules/vectors.js').then(m => { vectorExplorerModule = m.vectorExplorerModule; boatModeModule = m.boatModeModule; });
 
 // Pixels-per-unit used by the Cartesian plane in vectors.js.
-// Kept as a local constant (mirrors UNIT exported from vectors.js) to avoid
-// a circular import between drag.js and vectors.js.
 const VEC_UNIT = 30;
 
 export function getPos(e) {
@@ -77,9 +74,8 @@ export function startDrag(e) {
         }
 
     } else if (currentModule === vectorExplorerModule) {
-        // Click-anywhere-on-the-grid repositioning: snap the nearer of A's head
-        // or B's head to the click point immediately, then continue dragging it.
-        // Coordinates snap to whole integers rather than raw pixel-derived floats.
+
+        // Snapping logic
         const cx = canvas.width / 2, cy = canvas.height / 2;
         const { A, B, mode } = labState.vectors;
         const headB = mode === 'headToTail' ? { x: A.x + B.x, y: A.y + B.y } : { x: B.x, y: B.y };
@@ -101,9 +97,7 @@ export function startDrag(e) {
         draw();
 
     } else if (currentModule === boatModeModule) {
-        // Boat & River: any click anywhere on the grid repositions the boat's
         // velocity vector head to that point (snapped to whole units), then
-        // continues dragging it.
         const cx = canvas.width / 2, cy = canvas.height / 2;
         setDragging("boatVec");
         labState.boat.boatVel = { x: Math.round((x - cx) / VEC_UNIT), y: Math.round((cy - y) / VEC_UNIT) };
@@ -118,7 +112,7 @@ export function drag(e) {
 
     if (currentModule === subtendedAnglesModule && dragging.startsWith("circle")) {
         const cx = canvas.width / 2, cy = canvas.height / 2;
-        const key = dragging[6]; // "circleA" → "A"
+        const key = dragging[6];
         let angle = Math.atan2(y - cy, x - cx);
         labState.subtendedAngles.points[key] = angle < 0 ? angle + Math.PI * 2 : angle;
 
