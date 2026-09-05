@@ -1,10 +1,8 @@
-// modules/elevationDepression.js — Angle of Elevation & Depression lab module
-
 import { labState, canvas, RAD2DEG } from '../state.js';
 import { draw, createCanvasOnce, drawDragger } from '../canvas.js';
 import { attachDropdownMenu } from '../ui.js';
 
-// Shared geometry constants — mirrored in Js/drag.js for hit-testing
+// Shared geometry constants — mirrored in drag.js
 export const edGeom = {
     groundY: 340,
     eyeOffset: 30,
