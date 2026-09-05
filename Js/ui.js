@@ -1,4 +1,4 @@
-// ui.js — UI helpers: resetLab, randomFact, DOM panel helpers
+// UI helpers: resetLab, randomFact, DOM panel helpers
 
 import { currentModule, setCanvas, setCtx, setCurrentModule } from './state.js';
 const infoBtn = document.getElementById("info");
