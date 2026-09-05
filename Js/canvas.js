@@ -1,4 +1,4 @@
-// canvas.js — Canvas setup and all drawing helper functions
+// Canvas setup and all drawing helper functions
 
 import { canvas, ctx, currentModule, setCanvas, setCtx } from './state.js';
 import { shortestDiff } from './math.js';
