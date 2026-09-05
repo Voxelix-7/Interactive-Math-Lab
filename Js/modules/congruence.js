@@ -1,5 +1,3 @@
-// modules/congruence.js Congruence lab module
-
 import { labState, canvas, ctx } from '../state.js';
 import { draw, createCanvasOnce } from '../canvas.js';
 import { generateRandomGoal } from '../math.js';
