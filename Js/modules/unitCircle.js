@@ -1,5 +1,3 @@
-// modules/unitCircle.js — Unit Circle lab module
-
 import { labState, canvas, TAU, RAD2DEG } from '../state.js';
 import { draw, createCanvasOnce, drawDragger } from '../canvas.js';
 
@@ -67,7 +65,7 @@ export const unitCircleModule = {
         const r = labState.unitCircle.radius;
         const theta = labState.unitCircle.angle;
 
-        // Point on circle (standard math convention: CCW from positive x-axis, y flipped for screen)
+        // Point on circle
         const px = cx + r * Math.cos(theta);
         const py = cy - r * Math.sin(theta);
 
