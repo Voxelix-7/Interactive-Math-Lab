@@ -1,5 +1,3 @@
-// modules/unitCircle.js — Unit Circle lab module
-
 import { labState, canvas, TAU, RAD2DEG } from '../state.js';
 import { draw, createCanvasOnce, drawDragger } from '../canvas.js';
 
