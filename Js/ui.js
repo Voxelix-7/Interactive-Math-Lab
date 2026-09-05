@@ -1,4 +1,4 @@
-// ui.js — UI helpers: resetLab, randomFact, DOM panel helpers
+// UI helpers: resetLab, randomFact, DOM panel helpers
 
 import { currentModule, setCanvas, setCtx, setCurrentModule } from './state.js';
 const infoBtn = document.getElementById("info");
@@ -35,7 +35,7 @@ function setFactsOpen(isOpen) {
     if (isOpen) randomFact();
 }
 
-// Hover remains useful for pointer users; click and keyboard support touch devices.
+// Hover + click and keyboard support touch devices.
 if (infoBtn && factsBox) {
     infoBtn.addEventListener("mouseenter", () => {
         if (window.matchMedia?.("(hover: hover)").matches) setFactsOpen(true);
