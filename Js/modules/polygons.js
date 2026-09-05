@@ -1,5 +1,3 @@
-// modules/polygons.js Polygon Explorer lab module
-
 import { labState, canvas, ctx } from '../state.js';
 import { polygonNames } from '../state.js';
 import { draw, createCanvasOnce } from '../canvas.js';
